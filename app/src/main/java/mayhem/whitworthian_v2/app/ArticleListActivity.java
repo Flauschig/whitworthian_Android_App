@@ -27,25 +27,25 @@ import java.util.Vector;
  *
  *  Contains the following class variables:
  *      num_Articles    -the number of articles to display
- *      articles        -A string array containing the titles of articles to display
- *      descs           -A string array containing the descriptions of the articles to display
+ *      indices         -An integer array containing the indices of articles to display
  *      article_List    -A ListView object which corresponds to the ListView in the activity
  *      my_Genre        -The genre of the articles displayed
  *      my_Image        -The image corresponding to that genre.
  *      my_Instance     -A boolean determining whether or not this is the root top news list.
  *      app_Articles    -ArrayList containing all article data
+ *      article_Data    -Adapted relevant article data in a format that the app can handle.
+ *      adapter         -An adapter which puts article_Data into the view.
  */
 public class ArticleListActivity extends ActionBarActivity {
     private int num_Articles;
-    private String[] articles;
-    private String[] descs;
-    private int[] images;
-    private int[] ids;
+    private int[] indices;
     private ListView article_List;
     private String my_Genre;
     private int my_Image;
     private boolean my_Instance;
     private ArrayList<article> app_Articles;
+    private article_Selection article_Data[];
+    article_Selection_Adapter adapter;
 
 
     /*When this Intent begins, OnCreate is called */
@@ -183,33 +183,40 @@ public class ArticleListActivity extends ActionBarActivity {
         }
 
         //Initialize arrays to proper article number
-        articles = new String[num_Articles];
-        descs = new String[num_Articles];
-        images = new int[num_Articles];
-        ids = new int[num_Articles];
+        article_Data = new article_Selection[num_Articles];
+        indices = new int[num_Articles];
 
         //Go through all articles and pick out the ones that we want to look at.
         int counter = 0;
         if (!(my_Genre.equals(getResources().getString(R.string.top)))){  //Top News
             for (int i = 0; i < app_Articles.size(); i++) {
                 if (app_Articles.get(i).get_Genre().equals(my_Genre))
-                {   articles[counter] = app_Articles.get(i).get_Title();
-                    descs[counter] = app_Articles.get(i).get_Desc();
-                    images[counter] = app_Articles.get(i).get_image_ID();
-                    ids[counter] = app_Articles.get(i).get_Article_ID();
-                    counter++; }
+                {   counter = set_List_Info(counter, i); }
             }
         }
         else {
             for (int i = 0; i < app_Articles.size(); i++) { //Other genres
                 if (app_Articles.get(i).is_Top())
-                {   articles[counter] = app_Articles.get(i).get_Title();
-                    descs[counter] = app_Articles.get(i).get_Desc();
-                    images[counter] = app_Articles.get(i).get_image_ID();
-                    ids[counter] = app_Articles.get(i).get_Article_ID();
-                    counter++; }
+                {   counter = set_List_Info(counter, i); }
             }
         }
+    }
+
+    /* Used to fill article_Data and get important indices of articles arrays */
+    private int set_List_Info(int counter, int id) {
+        article_Data[counter] = new article_Selection();
+        article_Data[counter].set_Title(
+                app_Articles.get(id).get_Title());
+        article_Data[counter].set_Desc(
+                app_Articles.get(id).get_Desc());
+        article_Data[counter].set_Icon(
+                app_Articles.get(id).get_image_ID());
+        article_Data[counter].set_ID(
+                app_Articles.get(id).get_Article_ID());
+        article_Data[counter].set_Viewed(
+                app_Articles.get(id).get_Viewed());
+        indices[counter] = id;
+        return ++counter;
     }
 
     /* Returns this activity's article list ID. */
@@ -222,31 +229,44 @@ public class ArticleListActivity extends ActionBarActivity {
 
     /* Sets this activity's article list adapter to display Title, image, and description. */
     protected void set_Article_List_Adapter(View V) {
-        //Get the articles into adapter form
-        article_Selection article_Data[] = new article_Selection[num_Articles];
-        for (int i = 0; i < num_Articles; i++)
-        { article_Data[i] = new article_Selection(images[i], articles[i], descs[i], ids[i]); }
-
         //Then adapt the list to the proper format with the proper data
-        article_Selection_Adapter adapter = new article_Selection_Adapter(this, article_Data);
-        get_Article_List(V).setAdapter(adapter);
+        get_Article_List(V);
+        adapt_List(article_Data);
+    }
+
+    /* Adapts the article List view to display the appropriate data */
+    private void adapt_List(article_Selection[] article_Data) {
+        adapter = new article_Selection_Adapter(this, article_Data);
+        article_List.setAdapter(adapter);
     }
 
     /* On Click, loads the appropriate article */
     public void load_Article_View(View view, int position) {
+        article_Data[position].set_Viewed(true);
+        app_Articles.get(indices[position]).set_Viewed(true);
         Intent article_View = new Intent(this, ArticleViewActivity.class);
         article_View.putExtra("my_Genre", my_Genre);
-        article_View.putExtra("my_ID", ids[position]);
-        article_View.putParcelableArrayListExtra("my_Articles", app_Articles);
-        article_View.putExtra("first_Instance", this.my_Instance);
+        article_View.putExtra("my_Article", app_Articles.get(indices[position]));
         startActivityForResult(article_View, 1);
     }
 
+    /* Handles returning data from article View */
+    //TODO: Use this or get rid of it.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                //Maybe something needs to happen here.
+            }
+        }
+    }
 
     /**
      * A placeholder fragment containing a simple view.
      */
     public class PlaceholderFragment extends Fragment {
+        private View root_View;
+
         public PlaceholderFragment() {
         }
 
@@ -254,22 +274,29 @@ public class ArticleListActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(mayhem.whitworthian_v2.app.R.layout.fragment_article_list,
+            root_View = inflater.inflate(mayhem.whitworthian_v2.app.R.layout.fragment_article_list,
                     container, false);
 
             //Fills the article list with the appropriate articles
             fill_Article_Local_Data();
-            get_Article_List(rootView);
-            set_Article_List_Adapter(rootView);
+            get_Article_List(root_View);
+            set_Article_List_Adapter(root_View);
 
             //Sets up an event handler which waits for an article to be clicked on,
             // then loads the appropriate view
             article_List.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     load_Article_View(view, position);
+                    refresh_View();
+
                 }
             });
-            return rootView;
+            return root_View;
+        }
+
+        /*Forces the app to redraw the fragment */
+        private void refresh_View() {
+            adapter.notifyDataSetChanged();
         }
     }
 

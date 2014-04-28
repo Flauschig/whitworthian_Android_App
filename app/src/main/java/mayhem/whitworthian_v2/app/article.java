@@ -12,6 +12,7 @@ import android.os.Parcelable;
  *  genre:              the genre of the article
  *  is_Top:             a boolean determining whether or not the article is Top News
  *  has_Image:          a boolean determining whether or not the article has an image link
+ *  viewed:             a boolean determining whether or not the user has viewed the article
  *  image_ID:           default image ID based on genre
  *  image_URL:          if has_Image is true, the URL of this article's image.
  */
@@ -21,8 +22,9 @@ public class article implements Parcelable {
     private String body;
     private String desc;
     private String genre;
-    private Boolean is_Top;
-    private Boolean has_Image;
+    private boolean is_Top;
+    private boolean viewed;
+    private boolean has_Image;
     private int image_ID;
     private String image_URL;
 
@@ -48,6 +50,7 @@ public class article implements Parcelable {
         out.writeString(genre);
         out.writeByte((byte) (is_Top ? 1: 0));
         out.writeByte((byte) (has_Image ? 1 : 0));
+        out.writeByte((byte) (viewed ? 1 : 0));
         out.writeInt(image_ID);
         out.writeString(image_URL);
 
@@ -64,6 +67,7 @@ public class article implements Parcelable {
         genre = in.readString();
         is_Top = in.readByte() != 0;
         has_Image = in.readByte() != 0;
+        viewed = in.readByte() != 0;
         image_ID = in.readInt();
         image_URL = in.readString();
     }
@@ -93,13 +97,14 @@ public class article implements Parcelable {
         this.genre = "";
         this.is_Top = false;
         this.has_Image = false;
+        this.viewed = false;
         this.image_ID = 0;
         this.image_URL = null;
     }
 
     /* Constructor for articles which DO have image URLs */
-    public article(int article_ID, String title, String body, String desc, String genre, Boolean is_Top,
-                   Boolean has_Image, String image_URL){
+    public article(int article_ID, String title, String body, String desc, String genre, boolean is_Top,
+                   boolean has_Image, String image_URL){
         this.article_ID = article_ID;
         this.title = title;
         this.body = body;
@@ -107,6 +112,7 @@ public class article implements Parcelable {
         this.genre = genre;
         this.is_Top = is_Top;
         this.has_Image = has_Image;
+        this.viewed = false;
 
         if (this.has_Image)
         {
@@ -136,7 +142,7 @@ public class article implements Parcelable {
 
     /* Constructor for articles which DO NOT have image URLs */
     public article(int article_ID, String title, String body, String desc, String genre,
-                   Boolean is_Top, Boolean has_Image){
+                   boolean is_Top, boolean has_Image){
         this.article_ID = article_ID;
         this.title = title;
         this.body = body;
@@ -144,6 +150,7 @@ public class article implements Parcelable {
         this.genre = genre;
         this.is_Top = is_Top;
         this.has_Image = has_Image;
+        this.viewed = false;
 
         if (this.has_Image)
         {
@@ -184,10 +191,11 @@ public class article implements Parcelable {
     public String get_Genre(){
         return this.genre;
     }
-    public Boolean is_Top(){return is_Top;}
-    public Boolean get_Has_Image(){
+    public boolean is_Top(){return is_Top;}
+    public boolean get_Has_Image(){
         return has_Image;
     }
+    public boolean get_Viewed() {return viewed;}
     public int get_image_ID(){
         return image_ID;
     }
@@ -220,5 +228,6 @@ public class article implements Parcelable {
         }}
     public void set_Article_Is_Top(boolean is_Top) {this.is_Top = is_Top;}
     public void set_Article_Has_Image(boolean has_Image) {this.has_Image = has_Image;}
+    public void set_Viewed(boolean viewed) {this.viewed = viewed;}
     public void set_image_URL(String image_URL) {this.image_URL = image_URL;}
 }

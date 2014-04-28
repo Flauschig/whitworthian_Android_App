@@ -1,6 +1,7 @@
 package mayhem.whitworthian_v2.app;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,17 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
             holder.txt_Title.setText(data[position].get_Title());
             holder.img_Icon.setImageResource(data[position].get_Icon());
             holder.txt_Desc.setText(trim_Desc(data[position].get_Desc()));
+
+
+            //If it's viewed, make it look different
+            if (data[position].get_Viewed()) {
+                holder.txt_Title.setTextAppearance(this.context, R.style.old_title);
+                holder.txt_Desc.setTextAppearance(this.context, R.style.old_desc);
+                rowView.setBackgroundColor(Color.parseColor("#C0C0C0"));
+            }
+            else {
+                holder.txt_Title.setTextAppearance(this.context, R.style.new_title);
+            }
         }
         catch(NullPointerException bad) {
             bad.printStackTrace();
@@ -61,7 +73,9 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
     /* Clean ellipse and dash tags in description */
     private String trim_Desc(String desc) {
         desc = desc.replace("&#8211;", "-");
-        return desc.replace(" [&#038;hellip", "...");
+        desc = desc.replace(" [&#038;hellip", "...");
+        desc = desc.substring(0, 100) + "...";
+        return desc;
     }
 
     /* A data structure which holds the layout resources being filled. */

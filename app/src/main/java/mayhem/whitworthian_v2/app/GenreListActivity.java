@@ -127,6 +127,23 @@ public class GenreListActivity extends ActionBarActivity {
         }
     }
 
+    /* Handles returning data from article List */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Bundle goodies = data.getExtras();
+                try{
+                    this.app_Articles = goodies.getParcelableArrayList("my_Articles");
+                }
+                catch(NullPointerException bad){
+                    //TODO: Something better here.
+                    this.app_Articles = new ArrayList<article>();
+                }
+            }
+        }
+    }
+
 
     /**
      * A placeholder fragment containing a simple view.

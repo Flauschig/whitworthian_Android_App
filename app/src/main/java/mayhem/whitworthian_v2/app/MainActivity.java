@@ -62,7 +62,6 @@ public class MainActivity extends ActionBarActivity {
     private ArrayList<article> app_Articles;
     private final int NUM_GENRES = 5;
     private final URL urls[] = new URL[NUM_GENRES];
-    private AlertDialog.Builder alert;
     private ProgressBar my_Progress_Bar;
 
 
@@ -80,7 +79,6 @@ public class MainActivity extends ActionBarActivity {
 
 
         fill_URLs(); // fill url array
-        alert = make_Bad_Gather();
 
         app_Articles = null;
     }
@@ -110,33 +108,6 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    /*Pops up an alert dialog saying that the connection failed Gives user the option to retry */
-    private AlertDialog.Builder make_Bad_Gather() {
-        return new AlertDialog.Builder(getApplicationContext())
-                .setTitle("Connection failed")
-                .setMessage("Fetching data from thewhitworthian.com failed.")
-                .setPositiveButton(R.string.retry, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        new FetchArticlesTask().execute(urls); // fetch data
-                        if(app_Articles == null) { show_Bad_Gather(); }
-                    }
-                })
-                .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        //Go back to home
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert);
-    }
-
-    private void show_Bad_Gather() {
-            alert.show();
-    }
-
     /*Opens up a background AsyncTask which fetches all of the data from the website */
     private class FetchArticlesTask extends AsyncTask<URL, String, ArrayList<article>> {
         /*doInBackground is where the action happens, connection is made here, and data is
@@ -147,11 +118,10 @@ public class MainActivity extends ActionBarActivity {
         @Override
         protected ArrayList<article> doInBackground(URL... urls) {
             ArrayList<article> arrays[] = new ArrayList[NUM_GENRES];
-
-            if (is_Network_Connected()) {
-                for (int i = 0; i < NUM_GENRES; i++) { // loop through all feeds
-                    Rss_Handler handler = new Rss_Handler(i * 10000); //Create our custom handler
-                    try {
+            for (int i = 0; i < NUM_GENRES; i++) { // loop through all feeds
+                Rss_Handler handler = new Rss_Handler(i * 10000); //Create our custom handler
+                try {
+                    if (is_Network_Connected()) {
                         //Setup for connection
                         SAXParserFactory factory = SAXParserFactory.newInstance();
                         SAXParser saxParser = factory.newSAXParser();
@@ -163,28 +133,28 @@ public class MainActivity extends ActionBarActivity {
                         xmlReader.parse(my_Input);
 
                         arrays[i] = handler.getArticleList(); //store the data.
-
-                    } catch (IOException bad) {
-                        bad.printStackTrace();
-                        break;
-                    } catch (SAXException bad) {
-                        bad.printStackTrace();
-                        break;
-                    } catch (ParserConfigurationException bad) {
-                        bad.printStackTrace();
-                        break;
-                    } catch(Exception e) {
-                        if (e != null) {
-                            e.printStackTrace();
-                        } else {
-                            return null;
-                        }
-
+                    } else {
+                        return null;
                     }
+
+                } catch (IOException bad) {
+                    bad.printStackTrace();
+                    break;
+                } catch (SAXException bad) {
+                    bad.printStackTrace();
+                    break;
+                } catch (ParserConfigurationException bad) {
+                    bad.printStackTrace();
+                    break;
+                } catch (Exception e) {
+                    if (e != null) {
+                        e.printStackTrace();
+                    } else {
+                        return null;
+                    }
+
                 }
-            }
-            else {
-                return null;
+
             }
             return combineArrays(arrays); // Combines the array list
         }
@@ -234,18 +204,13 @@ public class MainActivity extends ActionBarActivity {
             super.onPostExecute(result);
 
             if(result==null) {
-                //TODO: Figure out how to make this not crash.
                 runOnUiThread(new Runnable() {
 
                     public void run() {
-
                         Toast.makeText(getApplicationContext(), "Internet Connection Failed.", Toast.LENGTH_SHORT).show();
                         hide_Progress();
-
-
                     }
                 });
-                //show_Bad_Gather();
                 return;
             }
 

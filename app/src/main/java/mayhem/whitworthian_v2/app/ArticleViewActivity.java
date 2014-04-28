@@ -27,24 +27,20 @@ import java.util.ArrayList;
  *  Contains the following class variables:
  *  my_Genre:           The genre of the current article
  *  my_Genre_Image:     The image associated with this article, for action bar customization
- *  my_ID:              The ID of the current article
+ *  my_Article:         Article to be displayed in this view
  *  my_Image_ID:        The ID of the article's genre's banner
  *  my_Image_URL:       A string containing the article's image's URL, if available.
  *  my_Title:           A string containing the title of the article
  *  my_Body:            A spanned string containing the body of the article, likely in HTML
- *  app_articles:       All of the articles gathered on the splash screen, so they don't disappear.
- *  list_Instance:      A boolean of whether or not the parent article list is the root Top News
  */
 public class ArticleViewActivity extends ActionBarActivity {
     private String my_Genre;
     private int my_Genre_Image;
-    private int my_ID;
+    private article my_Article;
     private int my_Image_ID;
     private String my_Image_URL;
     private String my_Title;
     private Spanned my_Body;
-    private ArrayList<article> app_Articles;
-    private boolean list_Instance;
 
     /* Create activity and fragment, Sets up local data */
     @Override
@@ -82,9 +78,6 @@ public class ArticleViewActivity extends ActionBarActivity {
             case android.R.id.home:
                 // when the back button is clicked, return to the article list we were just on
                 Intent data = new Intent();
-                data.putExtra("this_Genre", my_Genre);
-                data.putParcelableArrayListExtra("my_Articles", app_Articles);
-                data.putExtra("first_Instance", list_Instance);
                 setResult(RESULT_OK, data);
                 finish();
                 return true;
@@ -125,24 +118,18 @@ public class ArticleViewActivity extends ActionBarActivity {
 
         //Pull out important information
         try{
-            this.my_ID = goodies.getInt("my_ID");
-            this.list_Instance = goodies.getBoolean("first_Instance");
-            this.app_Articles = goodies.getParcelableArrayList("my_Articles");
+            this.my_Article = goodies.getParcelable("my_Article");
+            //this.my_ID = goodies.getInt("my_ID");
+            //this.list_Instance = goodies.getBoolean("first_Instance");
+            //this.app_Articles = goodies.getParcelableArrayList("my_Articles");
         }
         catch(NullPointerException bad){
             bad.printStackTrace();
         }
-
-        //Fill local variables
-        for (int i = 0; i < this.app_Articles.size(); i++) {
-            if (this.app_Articles.get(i).get_Article_ID() == my_ID) {
-                my_Body = Html.fromHtml(this.app_Articles.get(i).get_Body());
-                my_Title = this.app_Articles.get(i).get_Title();
-                my_Image_URL = this.app_Articles.get(i).get_image_URL();
-                my_Image_ID = this.app_Articles.get(i).get_image_ID();
-                break;
-            }
-        }
+        my_Body = Html.fromHtml(my_Article.get_Body());
+        my_Title = my_Article.get_Title();
+        my_Image_URL = my_Article.get_image_URL();
+        my_Image_ID = my_Article.get_image_ID();
     }
 
     /* Puts article genre and genre's icon on the action bar. */
