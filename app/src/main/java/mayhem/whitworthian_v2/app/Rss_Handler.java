@@ -60,12 +60,22 @@ public class Rss_Handler extends DefaultHandler {
             }
         } else if (localName.equalsIgnoreCase("description")) {
             this_Article.set_Article_Desc(chars.toString());
+        } else if (localName.equalsIgnoreCase("guid")) {
+            String ID = chars.toString();
+            if (ID.contains(".com/?p=")) {
+                String[] parts = ID.split("=");
+                //TODO: Add a try/catch in case the URL format is changed.
+                this_Article.set_Article_ID(Integer.parseInt(parts[1]));
+            }
         }
+
 
         // If this is the end of the article (end of an item and not the top item of the feed), then
         // store the article.
         if (localName.equalsIgnoreCase("item") && !(this_Article.get_Title().equals("The Whitworthian"))) {
-            this_Article.set_Article_ID(counter++);
+            if(this_Article.get_Article_ID() == -1)
+            { this_Article.set_Article_ID(counter++); } //If not found, set article ID
+
             this_Article.set_Article_Has_Image(false);  //Currently no articles have images.
 
             //add article and reset local article.

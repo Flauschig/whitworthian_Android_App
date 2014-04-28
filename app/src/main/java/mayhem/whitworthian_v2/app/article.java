@@ -90,7 +90,7 @@ public class article implements Parcelable {
 
     /* Default constructor.     */
     public article(){
-        this.article_ID = 0;
+        this.article_ID = -1;
         this.title = "";
         this.body = "";
         this.desc = "";

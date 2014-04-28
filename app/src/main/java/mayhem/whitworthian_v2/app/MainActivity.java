@@ -1,47 +1,30 @@
 package mayhem.whitworthian_v2.app;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.NetworkOnMainThreadException;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Editable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -57,12 +40,15 @@ import javax.xml.parsers.SAXParserFactory;
  *      NUM_GENRES:         The total number of genres -- HARDCODED
  *      urls:               An array of URLs from which to obtain data through RSS
  *      alert:              A dialog that tells the user something went bad
+ *      my_Progress_Bar:    The scroll wheel that tells the user that load is occuring
+ *      my_Progress_Text:   Gives user idea that progress is being made on loading data
  */
 public class MainActivity extends ActionBarActivity {
     private ArrayList<article> app_Articles;
     private final int NUM_GENRES = 5;
     private final URL urls[] = new URL[NUM_GENRES];
     private ProgressBar my_Progress_Bar;
+    private TextView my_Progress_Text;
 
 
     /* Creates the layout, fills the urls array, and fetches all data from thewhitworthian.com */
@@ -109,7 +95,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /*Opens up a background AsyncTask which fetches all of the data from the website */
-    private class FetchArticlesTask extends AsyncTask<URL, String, ArrayList<article>> {
+    private class FetchArticlesTask extends AsyncTask<URL, Integer, ArrayList<article>> {
         /*doInBackground is where the action happens, connection is made here, and data is
          * collected.
          */
@@ -133,6 +119,7 @@ public class MainActivity extends ActionBarActivity {
                         xmlReader.parse(my_Input);
 
                         arrays[i] = handler.getArticleList(); //store the data.
+                        publishProgress(new Integer[]{i});
                     } else {
                         return null;
                     }
@@ -156,6 +143,7 @@ public class MainActivity extends ActionBarActivity {
                 }
 
             }
+            publishProgress(new Integer[]{NUM_GENRES+1});
             return combineArrays(arrays); // Combines the array list
         }
 
@@ -192,10 +180,23 @@ public class MainActivity extends ActionBarActivity {
             return all_articles;
         }
 
-        //TODO: Add some text above load wheel so user knows stuff is happening
+        /* Updates load text on splash page */
         @Override
-        protected void onProgressUpdate(String... progress) {
-            //Display some new text above scroll wheel
+        protected void onProgressUpdate(Integer... progress) {
+            switch(progress[0]) {
+                case 0: update_Progress(getResources().getString(R.string.get_top));
+                    break;
+                case 1: update_Progress(getResources().getString(R.string.get_news));
+                    break;
+                case 2: update_Progress(getResources().getString(R.string.get_sports));
+                    break;
+                case 3: update_Progress(getResources().getString(R.string.get_opinion));
+                    break;
+                case 4: update_Progress(getResources().getString(R.string.get_ac));
+                    break;
+                case 5: update_Progress(getResources().getString(R.string.cleaning_data));
+                    break;
+            }
         }
 
         /* After articles are gathered, this opens up the Top News article list*/
@@ -208,6 +209,7 @@ public class MainActivity extends ActionBarActivity {
 
                     public void run() {
                         Toast.makeText(getApplicationContext(), "Internet Connection Failed.", Toast.LENGTH_SHORT).show();
+                        update_Progress(getResources().getString(R.string.connection_fail));
                         hide_Progress();
                     }
                 });
@@ -227,7 +229,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /*Handles item menu click */
-    //TODO: Add refresh functionality
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -238,6 +239,7 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             case R.id.action_refresh:
                 my_Progress_Bar.setVisibility(View.VISIBLE);
+                update_Progress(getResources().getString(R.string.load_text));
                 new FetchArticlesTask().execute(this.urls);
                 return true;
             default:
@@ -245,14 +247,20 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    /*Initialize the progress bar */
+    /*Initialize the progress bar & text */
     public void init_Progress_Bar(View view) {
         my_Progress_Bar = (ProgressBar) view.findViewById(R.id.news_Load_Bar);
+        my_Progress_Text = (TextView) view.findViewById(R.id.progress_Text);
     }
 
     /*Hide progress bar */
     public void hide_Progress() {
         my_Progress_Bar.setVisibility(View.INVISIBLE);
+    }
+
+    /*Update text in progress textview */
+    public void update_Progress(String update){
+        my_Progress_Text.setText(update);
     }
 
     /**

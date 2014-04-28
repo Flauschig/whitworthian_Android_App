@@ -30,6 +30,16 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/load_text"
+            android:id="@+id/progress_Text"
+            android:layout_above="@+id/news_Load_Bar"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="16dp"/>
+
     </RelativeLayout>
 
 
