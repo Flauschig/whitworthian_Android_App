@@ -1,5 +1,7 @@
 package mayhem.whitworthian_v2.app;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 
@@ -46,31 +49,33 @@ public class GenreListActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment()).commit();
         }
 
+        get_Article_Data();
+        handleIntent(getIntent());
+
         //The genre list view is always titled "The Whitworthian"
         setTitle(getResources().getString(R.string.app_name));
-        get_Article_Data();
+
     }
 
     /* After OnCreate, OnCreateOptionsMenu is called under-the-hood Here the search view
     * is initialized, and click-handling of the genre list is set up.*/
-    //TODO: Make search work
      @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.genre_list, menu);
-        /* ATTEMPS AT MAKING SEARCH WORK
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+     public boolean onCreateOptionsMenu(Menu menu) {
+         // Inflate the menu; this adds items to the action bar if it is present.
+         getMenuInflater().inflate(R.menu.genre_list, menu);
 
+         // Make search button clickable
+         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+         try {
+             SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
+                     .getActionView();
+             searchView.setSearchableInfo(searchManager
+                     .getSearchableInfo(getComponentName()));
+         } catch (NullPointerException bad) {
+             bad.printStackTrace();
+         }
 
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        if(null!=searchManager ) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        }
-        searchView.setIconifiedByDefault(false);
-
-        */
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     /*Handles all input for the top action bar. */
@@ -81,10 +86,39 @@ public class GenreListActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.action_search) { //Search
-            //TODO: Make Search Work
             onSearchRequested();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /*Stuff gets weird here.  When search is called, we actually briefly open another instance
+      of GenreListActivity, so we have to be sure to preserve app_Articles upon doing so.
+     */
+    @Override
+    public void startActivity(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            intent.putParcelableArrayListExtra("my_Articles", app_Articles);
+            super.startActivity(intent);
+            finish();
+            return;
+        }
+        super.startActivity(intent);
+    }
+
+    /*When we re-open the genre list with a search activity, it hits this code, and then
+     * opens search FOR RESULT so that we can get back which articles the user clicks on. */
+    private void handleIntent(Intent intent) {
+        // Get the intent, verify the action and get the query
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            // manually launch the real search activity
+            final Intent searchIntent = new Intent(getApplicationContext(),
+                    SearchResultsActivity.class);
+            // add query to the Intent Extras
+            searchIntent.putExtra(SearchManager.QUERY, query);
+            searchIntent.putParcelableArrayListExtra("my_Articles", app_Articles);
+            startActivityForResult(searchIntent, 2);
+        }
     }
 
     /* Fills  the genres array from data in strings.xml */
@@ -127,10 +161,22 @@ public class GenreListActivity extends ActionBarActivity {
         }
     }
 
-    /* Handles returning data from article List */
+    /* Handles returning data from article list or from search view */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                Bundle goodies = data.getExtras();
+                try{
+                    this.app_Articles = goodies.getParcelableArrayList("my_Articles");
+                }
+                catch(NullPointerException bad){
+                    //TODO: Something better here.
+                    this.app_Articles = new ArrayList<article>();
+                }
+            }
+        }
+        else if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
                 Bundle goodies = data.getExtras();
                 try{

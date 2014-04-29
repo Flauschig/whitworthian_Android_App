@@ -76,11 +76,7 @@ public class ArticleViewActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // when the back button is clicked, return to the article list we were just on
-                Intent data = new Intent();
-                setResult(RESULT_OK, data);
                 finish();
-                return true;
             case mayhem.whitworthian_v2.app.R.id.action_settings:
                 return true;
             default:
