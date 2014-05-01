@@ -3,6 +3,8 @@ package mayhem.whitworthian_v2.app;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -194,18 +196,24 @@ public class ArticleViewActivity extends ActionBarActivity {
 
                 //Set the Body
                 final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
+
+                /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+                    body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
+                }*/
                 final String mimeType = "text/html";
                 final String encoding = "UTF-8";
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
 
-                //Makes webview background transparent, not white.
-                body_Text.setBackgroundColor(Color.TRANSPARENT);
+                //Makes webview background (almost) transparent, not white.
+                body_Text.setBackgroundColor(Color.argb(1,0,0,0));
 
                 //Scales in-article images to fit screen width
                 body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 
                 //Set the Image
                 set_Banner_Image(rootView);
+
+
             }
             catch(NullPointerException bad){
                 bad.printStackTrace();
