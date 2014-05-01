@@ -23,6 +23,7 @@ public class SearchResultsActivity extends Activity {
     private ListView search_List;
     int indices[];
     private article_Selection_Adapter adapter;
+    private TextView no_Search;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class SearchResultsActivity extends Activity {
 
         search_Articles = new ArrayList<article>();
         search_List = (ListView) findViewById(R.id.search_list);
+        no_Search = (TextView) findViewById(R.id.no_search_info);
 
         handleIntent(getIntent());
 
@@ -123,6 +125,9 @@ public class SearchResultsActivity extends Activity {
         //TODO: DISPLAY NO RESULT MESSAGE
         if (search_Articles.size() == 0) {
             return;
+        }
+        else {
+            no_Search.setVisibility(View.INVISIBLE);
         }
 
         article_Data = new article_Selection[search_Articles.size()];

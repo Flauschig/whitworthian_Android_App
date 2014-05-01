@@ -52,7 +52,6 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
             holder.img_Icon.setImageResource(data[position].get_Icon());
             holder.txt_Desc.setText(trim_Desc(data[position].get_Desc()));
 
-
             //If it's viewed, make it look different
             if (data[position].get_Viewed()) {
                 holder.txt_Title.setTextAppearance(this.context, R.style.old_title);

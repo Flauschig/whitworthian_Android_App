@@ -27,8 +27,8 @@
     <string name="get_opinion">Getting Opinions</string>
     <string name="cleaning_data">Cleaning Data</string>
     <string name="connection_fail">Connection Failed</string>
-    <string name="transparent">#00000000</string>
     <string name="whitworthian_red">#CD212F</string>
+    <string name="no_search">No Search Results.</string>
 
     <string-array name="news_Genres">
         <item>Top News</item>
