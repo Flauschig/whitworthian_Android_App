@@ -21,6 +21,7 @@ _______________________________________________________
 <li>ArticleListActivity
 <li>ArticleViewActivity
 <li>GenreListActivity
+<li>SearchResultsActivity
 </ul>
 </li>
 <li><p>Create the following java classes:</p>
