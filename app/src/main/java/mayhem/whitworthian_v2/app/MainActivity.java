@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -144,7 +145,8 @@ public class MainActivity extends ActionBarActivity {
 
             }
             publishProgress(new Integer[]{NUM_GENRES+1});
-            return combineArrays(arrays); // Combines the array list
+
+            return clean_Article_Bodies(combine_Arrays(arrays)); // Combines the array list
         }
 
         /*Check to see if connected to a network*/
@@ -155,9 +157,22 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
+        /* Applies justification to all text in the article's body*/
+        private ArrayList<article> clean_Article_Bodies(ArrayList<article> all_Articles) {
+            for(int j = 0; j < all_Articles.size(); j++)
+            {
+                //justify text
+                String body = all_Articles.get(j).get_Body();
+                body = "<body style=\"text-align:justify;\"> " + body + " </body>";
+                all_Articles.get(j).set_Article_Body(body);
+            }
+            return all_Articles;
+        }
+
+
 
         /*Combine an array of ArrayLists of articles into one ArrayList of articles. */
-        private ArrayList<article> combineArrays (ArrayList<article>[] arrays) {
+        private ArrayList<article> combine_Arrays (ArrayList<article>[] arrays) {
             boolean accept = true; //Only accept articles that aren't in the list already
             ArrayList<article> all_articles = new ArrayList<article>();
 

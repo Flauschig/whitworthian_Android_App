@@ -2,6 +2,7 @@ package mayhem.whitworthian_v2.app;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,7 +43,8 @@ public class ArticleViewActivity extends ActionBarActivity {
     private int my_Image_ID;
     private String my_Image_URL;
     private String my_Title;
-    private Spanned my_Body;
+    private String my_Body;
+    //private Spanned my_Body;
 
     /* Create activity and fragment, Sets up local data */
     @Override
@@ -122,7 +126,8 @@ public class ArticleViewActivity extends ActionBarActivity {
         catch(NullPointerException bad){
             bad.printStackTrace();
         }
-        my_Body = Html.fromHtml(my_Article.get_Body());
+        //my_Body = Html.fromHtml(my_Article.get_Body());
+        my_Body = my_Article.get_Body();
         my_Title = my_Article.get_Title();
         my_Image_URL = my_Article.get_image_URL();
         my_Image_ID = my_Article.get_image_ID();
@@ -188,8 +193,16 @@ public class ArticleViewActivity extends ActionBarActivity {
                 title_Text.setText(my_Title);
 
                 //Set the Body
-                final TextView body_Text = (TextView) rootView.findViewById(R.id.article_content);
-                body_Text.setText(my_Body);
+                final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
+                final String mimeType = "text/html";
+                final String encoding = "UTF-8";
+                body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
+
+                //Makes webview background transparent, not white.
+                body_Text.setBackgroundColor(Color.TRANSPARENT);
+
+                //Scales in-article images to fit screen width
+                body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 
                 //Set the Image
                 set_Banner_Image(rootView);

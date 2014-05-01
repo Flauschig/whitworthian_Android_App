@@ -1,5 +1,8 @@
 package mayhem.whitworthian_v2.app;
+import android.view.Display;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.xml.sax.Attributes;
@@ -25,6 +28,7 @@ public class Rss_Handler extends DefaultHandler {
 
     /*Constructor - Must be fed an ID base to keep track of different ID numbers */
     public Rss_Handler(int id_base){counter = id_base;}
+
 
     /* This method is called every time an XML start element ("<") is found.
      * Reset the value of chars, as we're only interested in what's inside the node.
