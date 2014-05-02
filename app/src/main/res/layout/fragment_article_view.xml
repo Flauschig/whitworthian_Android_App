@@ -12,12 +12,23 @@
             android:layout_height="wrap_content"
             android:background="#636466">
             <ImageView
-                android:id="@+id/article_image"
+                android:id="@+id/article_banner"
                 android:src="@drawable/news_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:contentDescription="tempImage" />
             </RelativeLayout>
+
+        <WebView
+            android:id="@+id/article_image"
+            android:text="@string/test_Content"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="#01000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
 
         <TextView

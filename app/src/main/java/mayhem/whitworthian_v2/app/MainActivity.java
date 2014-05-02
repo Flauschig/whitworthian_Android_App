@@ -161,6 +161,13 @@ public class MainActivity extends ActionBarActivity {
             return all_Articles;
         }
 
+        /*Surrounds image urls in appropriate html */
+        private String format_Image(String image_URL) {
+            return  "<body>" +
+                    "<img src=" + image_URL + " width=\"100%\" />" +
+                    "</body>";
+        }
+
 
 
         /*Combine an array of ArrayLists of articles into one ArrayList of articles. */
@@ -178,6 +185,10 @@ public class MainActivity extends ActionBarActivity {
                     //Mark top news articles as top news
                     if (i == 0) { arrays[i].get(j).set_Article_Is_Top(true); }
                     else { arrays[i].get(j).set_Article_Is_Top(false); }
+
+                    //format URLs of images
+                    arrays[i].get(j).set_image_URL(format_Image(arrays[i].get(j).get_image_URL()));
+                    arrays[i].get(j).set_Thumb_URL(format_Image(arrays[i].get(j).get_Thumb_URL()));
 
                     //Add articles we're accepting to the array
                     if (accept) { all_articles.add(arrays[i].get(j)); }

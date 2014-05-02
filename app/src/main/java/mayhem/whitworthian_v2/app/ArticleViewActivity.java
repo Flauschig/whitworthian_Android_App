@@ -88,29 +88,20 @@ public class ArticleViewActivity extends ActionBarActivity {
         }
     }
 
-    /*Sets the article Image using either my_Image_URL (if available) or my_Image_ID */
+    /*Sets the article banner Image using my_Image_ID */
     private void set_Banner_Image(View V) {
-        if (my_Image_URL != null) {
-            ///Set the image using the url
+
+        final ImageView image_Box = (ImageView) V.findViewById(R.id.article_banner);
+        if (my_Image_ID == R.drawable.news_box) {
+            image_Box.setImageResource(R.drawable.news_bar);
+        } else if (my_Image_ID == R.drawable.opinions_box) {
+            image_Box.setImageResource(R.drawable.opinions_bar);
+        } else if (my_Image_ID == R.drawable.ac_box) {
+            image_Box.setImageResource(R.drawable.ac_bar);
+        } else if (my_Image_ID == R.drawable.sports_box) {
+            image_Box.setImageResource(R.drawable.sports_bar);
         }
-        else {
-            final ImageView image_Box = (ImageView) V.findViewById(R.id.article_image);
-            if (my_Image_URL == null)
-            {
-                if (my_Image_ID == R.drawable.news_box){
-                    image_Box.setImageResource(R.drawable.news_bar);
-                }
-                else if (my_Image_ID == R.drawable.opinions_box) {
-                    image_Box.setImageResource(R.drawable.opinions_bar);
-                }
-                else if (my_Image_ID == R.drawable.ac_box) {
-                    image_Box.setImageResource(R.drawable.ac_bar);
-                }
-                else if (my_Image_ID == R.drawable.sports_box) {
-                    image_Box.setImageResource(R.drawable.sports_bar);
-                }
-            }
-        }
+
     }
 
     /* Picks out the proper article from app_Articles and fills in all appropriate data locally */
@@ -197,12 +188,17 @@ public class ArticleViewActivity extends ActionBarActivity {
                 final String mimeType = "text/html";
                 final String encoding = "UTF-8";
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
-
                 //Makes webview background transparent, not white.
-                body_Text.setBackgroundColor(Color.TRANSPARENT);
-
+                body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
                 //Scales in-article images to fit screen width
                 body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+                //Set the image, if it exists
+                if (my_Article.get_Has_Image()) {
+                    final WebView image = (WebView) rootView.findViewById(R.id.article_image);
+                    image.loadDataWithBaseURL("", my_Article.get_image_URL(), mimeType, encoding, "");
+                    image.setBackgroundColor(Color.argb(1, 0, 0, 0));
+                }
 
                 //Set the Image
                 set_Banner_Image(rootView);
