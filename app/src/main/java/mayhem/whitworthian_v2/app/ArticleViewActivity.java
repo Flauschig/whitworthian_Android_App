@@ -197,9 +197,6 @@ public class ArticleViewActivity extends ActionBarActivity {
                 //Set the Body
                 final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
 
-                /*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-                    body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
-                }*/
                 final String mimeType = "text/html";
                 final String encoding = "UTF-8";
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");

@@ -3,7 +3,9 @@ package mayhem.whitworthian_v2.app;
 import mayhem.whitworthian_v2.app.R;
 import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -15,7 +17,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -193,13 +202,70 @@ public class ArticleListActivity extends ActionBarActivity {
                 if (app_Articles.get(i).get_Genre().equals(my_Genre))
                 {   counter = set_List_Info(counter, i); }
             }
+            readFile("ArticlesViewed");
         }
         else {
             for (int i = 0; i < app_Articles.size(); i++) { //Other genres
                 if (app_Articles.get(i).is_Top())
                 {   counter = set_List_Info(counter, i); }
             }
+            readFile("ArticlesViewed");
         }
+    }
+
+    private void readFile(String file){
+
+        // If the article has previously been viewed, then set viewed
+        try {
+            // Set up the buffer for the input
+            byte[] buffer;
+            // Set up the file input stream
+            FileInputStream fis = openFileInput(file);
+
+            int c;
+            String temp="";
+            while((c = fis.read()) != -1){
+                temp = temp + Character.toString((char)c);
+            }
+            fis.close();
+
+            // Split the String on , and feed the article titles into a String array
+            String[] articles = temp.split("@");
+
+            // If the number of articles is greater than 80, then delete the first half and overwrite the file
+            if(articles.length > num_Articles * 2){
+                String tempStr = "";
+                // Copy the last 40 article titles into a temporary string
+                for(int i = num_Articles; i < num_Articles * 2; i++){
+                    tempStr += articles[i];
+                    tempStr += "@";
+                }
+                // Overwrite "ArticlesViewed"
+                String FILENAME = "ArticlesViewed";
+                // Write the string to the file "ArticlesViewed"
+                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
+                for(int i = 0; i < tempStr.length(); i++){
+                    fos.write(tempStr.charAt(i));
+                }
+            }
+
+            // Check each article title in articles[], and if it matches
+            // article_Data[j].get_Title(), then it has already been viewed
+            // Set article_Data[j].set_Viewed to true.
+            for(int i = 0; i < articles.length; i++){
+                for(int j = 0; j < article_Data.length; j++){
+                    if (article_Data[j].get_Title().equals(articles[i])){
+                        article_Data[j].set_Viewed(true);
+                    }
+                }
+            }
+            // Catch exceptions
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT);
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT);
+        }
+
     }
 
     /* Used to fill article_Data and get important indices of articles arrays */
@@ -215,6 +281,7 @@ public class ArticleListActivity extends ActionBarActivity {
                 app_Articles.get(id).get_Article_ID());
         article_Data[counter].set_Viewed(
                 app_Articles.get(id).get_Viewed());
+
         indices[counter] = id;
         return ++counter;
     }
@@ -242,6 +309,30 @@ public class ArticleListActivity extends ActionBarActivity {
 
     /* On Click, loads the appropriate article */
     public void load_Article_View(View view, int position) {
+        // Only write title to file if this article has not already been viewed!
+
+        if(!article_Data[position].get_Viewed()){
+            // Save all of the viewed article titles to internal file "ArticlesViewed"
+            String FILENAME = "ArticlesViewed";
+            // WRITE TO THE FILE
+            try{
+                // Make a file output stream
+                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
+                // Write the article title to the file "ArticlesViewed"
+                for(int i = 0; i < article_Data[position].get_Title().length(); i++){
+                    fos.write(article_Data[position].get_Title().charAt(i));
+                }
+                // Delimit the titles with something unique that probably won't be in a title
+                // TODO:  Talk to Andrew Forhan for a character that won't be used?
+                fos.write("@".getBytes());
+                fos.close();
+            }
+            catch (IOException e){
+                // Catch the IOException
+                Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
+            }
+        }
+
         article_Data[position].set_Viewed(true);
         app_Articles.get(indices[position]).set_Viewed(true);
         Intent article_View = new Intent(this, ArticleViewActivity.class);
