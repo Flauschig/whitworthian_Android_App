@@ -229,10 +229,11 @@ public class ArticleListActivity extends ActionBarActivity {
             }
             fis.close();
 
-            // Split the String on , and feed the article titles into a String array
+            // Split the String on @, and feed the article IDs into a String array
             String[] articles = temp.split("@");
 
             // If the number of articles is greater than 80, then delete the first half and overwrite the file
+            /* THIS PART DOESN'T WORK YET */
             if(articles.length > num_Articles * 2){
                 String tempStr = "";
                 // Copy the last 40 article titles into a temporary string
@@ -249,12 +250,12 @@ public class ArticleListActivity extends ActionBarActivity {
                 }
             }
 
-            // Check each article title in articles[], and if it matches
-            // article_Data[j].get_Title(), then it has already been viewed
+            // Check each article ID in articles[], and if it matches
+            // article_Data[j].get_ID(), then it has already been viewed
             // Set article_Data[j].set_Viewed to true.
             for(int i = 0; i < articles.length; i++){
                 for(int j = 0; j < article_Data.length; j++){
-                    if (article_Data[j].get_Title().equals(articles[i])){
+                    if(Integer.toString(article_Data[j].get_ID()).equals(articles[i])){
                         article_Data[j].set_Viewed(true);
                     }
                 }
@@ -310,20 +311,21 @@ public class ArticleListActivity extends ActionBarActivity {
     /* On Click, loads the appropriate article */
     public void load_Article_View(View view, int position) {
         // Only write title to file if this article has not already been viewed!
-
         if(!article_Data[position].get_Viewed()){
             // Save all of the viewed article titles to internal file "ArticlesViewed"
             String FILENAME = "ArticlesViewed";
             // WRITE TO THE FILE
             try{
                 // Make a file output stream
+                /* To clear file:  change MODE_APPEND to MODE_PRIVATE,
+                *   run app and view one article, close app.  It's now cleared,
+                *   change back to MODE_APPEND */
                 FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
                 // Write the article title to the file "ArticlesViewed"
-                for(int i = 0; i < article_Data[position].get_Title().length(); i++){
-                    fos.write(article_Data[position].get_Title().charAt(i));
+                for(int i = 0; i < Integer.toString(article_Data[position].get_ID()).length(); i++){
+                    fos.write(Integer.toString(article_Data[position].get_ID()).charAt(i));
                 }
-                // Delimit the titles with something unique that probably won't be in a title
-                // TODO:  Talk to Andrew Forhan for a character that won't be used?
+                // Delimit the IDs with @
                 fos.write("@".getBytes());
                 fos.close();
             }
