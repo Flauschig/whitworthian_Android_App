@@ -90,29 +90,20 @@ public class ArticleViewActivity extends ActionBarActivity {
         }
     }
 
-    /*Sets the article Image using either my_Image_URL (if available) or my_Image_ID */
+    /*Sets the article banner Image using my_Image_ID */
     private void set_Banner_Image(View V) {
-        if (my_Image_URL != null) {
-            ///Set the image using the url
+
+        final ImageView image_Box = (ImageView) V.findViewById(R.id.article_banner);
+        if (my_Image_ID == R.drawable.news_box) {
+            image_Box.setImageResource(R.drawable.news_bar);
+        } else if (my_Image_ID == R.drawable.opinions_box) {
+            image_Box.setImageResource(R.drawable.opinions_bar);
+        } else if (my_Image_ID == R.drawable.ac_box) {
+            image_Box.setImageResource(R.drawable.ac_bar);
+        } else if (my_Image_ID == R.drawable.sports_box) {
+            image_Box.setImageResource(R.drawable.sports_bar);
         }
-        else {
-            final ImageView image_Box = (ImageView) V.findViewById(R.id.article_image);
-            if (my_Image_URL == null)
-            {
-                if (my_Image_ID == R.drawable.news_box){
-                    image_Box.setImageResource(R.drawable.news_bar);
-                }
-                else if (my_Image_ID == R.drawable.opinions_box) {
-                    image_Box.setImageResource(R.drawable.opinions_bar);
-                }
-                else if (my_Image_ID == R.drawable.ac_box) {
-                    image_Box.setImageResource(R.drawable.ac_bar);
-                }
-                else if (my_Image_ID == R.drawable.sports_box) {
-                    image_Box.setImageResource(R.drawable.sports_bar);
-                }
-            }
-        }
+
     }
 
     /* Picks out the proper article from app_Articles and fills in all appropriate data locally */
@@ -190,6 +181,18 @@ public class ArticleViewActivity extends ActionBarActivity {
                     container, false);
 
             try {
+                //Set the image, if it exists
+                final WebView image = (WebView) rootView.findViewById(R.id.article_image);
+                final String mimeType = "text/html";
+                final String encoding = "UTF-8";
+                if (my_Article.get_Has_Image()) {
+                    image.loadDataWithBaseURL("", my_Article.get_image_URL(), mimeType, encoding, "");
+                    image.setBackgroundColor(Color.argb(1, 0, 0, 0));
+                }
+                else {
+                    image.setVisibility(View.GONE);
+                }
+
                 //Set the Title
                 final TextView title_Text = (TextView) rootView.findViewById(R.id.article_title);
                 title_Text.setText(my_Title);
@@ -197,15 +200,13 @@ public class ArticleViewActivity extends ActionBarActivity {
                 //Set the Body
                 final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
 
-                final String mimeType = "text/html";
-                final String encoding = "UTF-8";
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
-
-                //Makes webview background (almost) transparent, not white.
-                body_Text.setBackgroundColor(Color.argb(1,0,0,0));
-
+                //Makes webview background transparent, not white.
+                body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
                 //Scales in-article images to fit screen width
                 body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+
 
                 //Set the Image
                 set_Banner_Image(rootView);

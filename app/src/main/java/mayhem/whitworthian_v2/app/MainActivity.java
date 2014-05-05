@@ -23,6 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -106,20 +107,14 @@ public class MainActivity extends ActionBarActivity {
         protected ArrayList<article> doInBackground(URL... urls) {
             ArrayList<article> arrays[] = new ArrayList[NUM_GENRES];
             for (int i = 0; i < NUM_GENRES; i++) { // loop through all feeds
-                Rss_Handler handler = new Rss_Handler(i * 10000); //Create our custom handler
                 try {
                     if (is_Network_Connected()) {
                         //Setup for connection
-                        SAXParserFactory factory = SAXParserFactory.newInstance();
-                        SAXParser saxParser = factory.newSAXParser();
-                        XMLReader xmlReader = saxParser.getXMLReader();
-                        xmlReader.setContentHandler(handler); //Tailor our parsing to our needs
+                        Rss_Handler new_Parser = new Rss_Handler(getApplicationContext());
+                        InputStream input = urls[i].openStream();
+                        new_Parser.parse(input);
 
-                        //Set the input as the current feed's stream & parse
-                        InputSource my_Input = new InputSource(urls[i].openStream());
-                        xmlReader.parse(my_Input);
-
-                        arrays[i] = handler.getArticleList(); //store the data.
+                        arrays[i] = new_Parser.getArticleList(); //store the data.
                         publishProgress(new Integer[]{i});
                     } else {
                         return null;
@@ -129,9 +124,6 @@ public class MainActivity extends ActionBarActivity {
                     bad.printStackTrace();
                     break;
                 } catch (SAXException bad) {
-                    bad.printStackTrace();
-                    break;
-                } catch (ParserConfigurationException bad) {
                     bad.printStackTrace();
                     break;
                 } catch (Exception e) {
@@ -169,6 +161,16 @@ public class MainActivity extends ActionBarActivity {
             return all_Articles;
         }
 
+        /*Surrounds image urls in appropriate html */
+        private String format_Image(String image_URL) {
+            if (image_URL == null) {
+                return null;
+            }
+            return  "<body>" +
+                    "<img src=" + image_URL + " width=\"100%\" />" +
+                    "</body>";
+        }
+
 
 
         /*Combine an array of ArrayLists of articles into one ArrayList of articles. */
@@ -186,6 +188,10 @@ public class MainActivity extends ActionBarActivity {
                     //Mark top news articles as top news
                     if (i == 0) { arrays[i].get(j).set_Article_Is_Top(true); }
                     else { arrays[i].get(j).set_Article_Is_Top(false); }
+
+                    //format URLs of images
+                    arrays[i].get(j).set_image_URL(format_Image(arrays[i].get(j).get_image_URL()));
+                    arrays[i].get(j).set_Thumb_URL(format_Image(arrays[i].get(j).get_Thumb_URL()));
 
                     //Add articles we're accepting to the array
                     if (accept) { all_articles.add(arrays[i].get(j)); }
