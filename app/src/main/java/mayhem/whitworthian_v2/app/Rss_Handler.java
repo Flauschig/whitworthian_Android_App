@@ -1,4 +1,6 @@
 package mayhem.whitworthian_v2.app;
+import android.content.Context;
+import android.content.res.Resources;
 import android.sax.Element;
 import android.sax.ElementListener;
 import android.sax.EndTextElementListener;
@@ -23,9 +25,11 @@ import org.xml.sax.helpers.DefaultHandler;
 public class Rss_Handler{
     private ArrayList<article> my_Articles;
     private article current_Article;
+    private Context ctxt;
 
-    public Rss_Handler() {
+    public Rss_Handler(Context ctxt) {
         my_Articles = new ArrayList<article>();
+        this.ctxt = ctxt;
     }
 
 
@@ -80,15 +84,42 @@ public class Rss_Handler{
         });
         item.getChild("http://search.yahoo.com/mrss/", "content").setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
-                current_Article.set_image_URL(attributes.getValue("", "url"));
+                if (check_Image(attributes.getValue("", "url"))) {
+                    current_Article.set_image_URL(attributes.getValue("", "url"));
+                } else {
+                    current_Article.set_image_URL(null);
+                }
             }
         });
         item.getChild("http://search.yahoo.com/mrss/", "thumbnail").setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
-                current_Article.set_Thumb_URL(attributes.getValue("", "url"));
+                if (check_Image(attributes.getValue("", "url"))) {
+                    current_Article.set_Thumb_URL(attributes.getValue("", "url"));
+                } else {
+                    current_Article.set_Thumb_URL(null);
+                }
             }
         });
         Xml.parse(is, Xml.Encoding.UTF_8, rss.getContentHandler());
+    }
+
+    /*Sees if the image url is one of the generic images for a given section */
+    public boolean check_Image(String url) {
+        try {
+            if (url.contains(ctxt.getString(R.string.ac_img_url))) {
+                return false;
+            } else if (url.contains(ctxt.getString(R.string.news_img_url))) {
+                return false;
+            } else if (url.contains(ctxt.getString(R.string.opinions_img_url))) {
+                return false;
+            } else if (url.contains(ctxt.getString(R.string.sports_img_url))) {
+                return false;
+            }
+            return true;
+        } catch (NullPointerException bad) {
+            bad.printStackTrace();
+        }
+        return true;
     }
 
     public void onItem() {

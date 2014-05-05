@@ -179,26 +179,32 @@ public class ArticleViewActivity extends ActionBarActivity {
                     container, false);
 
             try {
+                //Set the image, if it exists
+                final WebView image = (WebView) rootView.findViewById(R.id.article_image);
+                final String mimeType = "text/html";
+                final String encoding = "UTF-8";
+                if (my_Article.get_Has_Image()) {
+                    image.loadDataWithBaseURL("", my_Article.get_image_URL(), mimeType, encoding, "");
+                    image.setBackgroundColor(Color.argb(1, 0, 0, 0));
+                }
+                else {
+                    image.setVisibility(View.GONE);
+                }
+
                 //Set the Title
                 final TextView title_Text = (TextView) rootView.findViewById(R.id.article_title);
                 title_Text.setText(my_Title);
 
                 //Set the Body
                 final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
-                final String mimeType = "text/html";
-                final String encoding = "UTF-8";
+
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
                 //Makes webview background transparent, not white.
                 body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
                 //Scales in-article images to fit screen width
                 body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 
-                //Set the image, if it exists
-                if (my_Article.get_Has_Image()) {
-                    final WebView image = (WebView) rootView.findViewById(R.id.article_image);
-                    image.loadDataWithBaseURL("", my_Article.get_image_URL(), mimeType, encoding, "");
-                    image.setBackgroundColor(Color.argb(1, 0, 0, 0));
-                }
+
 
                 //Set the Image
                 set_Banner_Image(rootView);

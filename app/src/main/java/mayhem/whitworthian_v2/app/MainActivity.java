@@ -110,7 +110,7 @@ public class MainActivity extends ActionBarActivity {
                 try {
                     if (is_Network_Connected()) {
                         //Setup for connection
-                        Rss_Handler new_Parser = new Rss_Handler();
+                        Rss_Handler new_Parser = new Rss_Handler(getApplicationContext());
                         InputStream input = urls[i].openStream();
                         new_Parser.parse(input);
 
@@ -163,6 +163,9 @@ public class MainActivity extends ActionBarActivity {
 
         /*Surrounds image urls in appropriate html */
         private String format_Image(String image_URL) {
+            if (image_URL == null) {
+                return null;
+            }
             return  "<body>" +
                     "<img src=" + image_URL + " width=\"100%\" />" +
                     "</body>";

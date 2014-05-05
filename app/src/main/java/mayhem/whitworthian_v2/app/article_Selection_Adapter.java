@@ -73,6 +73,7 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
     private String trim_Desc(String desc) {
         desc = desc.replace("&#8211;", "-");
         desc = desc.replace(" [&#038;hellip", "...");
+        desc = desc.replace("&#8217;", "'");
         desc = desc.substring(0, 100) + "...";
         return desc;
     }
