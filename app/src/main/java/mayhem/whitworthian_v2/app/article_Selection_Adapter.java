@@ -6,6 +6,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,9 +49,23 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
             holder.img_Icon = (ImageView) rowView.findViewById(R.id.article_Img_Icon);
             holder.txt_Title = (TextView) rowView.findViewById(R.id.article_Title);
             holder.txt_Desc = (TextView) rowView.findViewById(R.id.article_Desc);
+            holder.img_URL = (WebView) rowView.findViewById(R.id.thumbnail);
+
             holder.txt_Title.setText(data[position].get_Title());
             holder.img_Icon.setImageResource(data[position].get_Icon());
             holder.txt_Desc.setText(trim_Desc(data[position].get_Desc()));
+
+            if(data[position].get_icon_URL() == null) {
+                holder.img_URL.setVisibility(View.GONE);
+            } else {
+                final String mimeType = "text/html";
+                final String encoding = "UTF-8";
+                holder.img_URL.loadDataWithBaseURL("", data[position].get_icon_URL(),
+                        mimeType, encoding, "");
+                holder.img_URL.setBackgroundColor(Color.argb(1, 0, 0, 0));
+                holder.img_Icon.setVisibility(View.INVISIBLE);
+            }
+
 
             //If it's viewed, make it look different
             if (data[position].get_Viewed()) {
@@ -83,5 +98,6 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
         private ImageView img_Icon = null;
         private TextView txt_Title = null;
         private TextView txt_Desc = null;
+        private WebView img_URL = null;
     }
 }

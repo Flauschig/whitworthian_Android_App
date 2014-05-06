@@ -20,7 +20,12 @@ public class article_Selection {
 
     /* Default Constructor */
     public article_Selection(){
-        super();
+        icon = 0;
+        title = null;
+        id = 0;
+        desc = null;
+        viewed = false;
+        icon_URL = null;
     }
 
     /* Constructor for article_Selection when information is available */

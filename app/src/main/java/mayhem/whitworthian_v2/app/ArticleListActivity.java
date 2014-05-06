@@ -276,12 +276,17 @@ public class ArticleListActivity extends ActionBarActivity {
                 app_Articles.get(id).get_Title());
         article_Data[counter].set_Desc(
                 app_Articles.get(id).get_Desc());
-        article_Data[counter].set_Icon(
-                app_Articles.get(id).get_image_ID());
         article_Data[counter].set_ID(
                 app_Articles.get(id).get_Article_ID());
         article_Data[counter].set_Viewed(
                 app_Articles.get(id).get_Viewed());
+        article_Data[counter].set_Icon(
+                app_Articles.get(id).get_image_ID());
+
+        if (app_Articles.get(id).get_Has_Thumb()) {
+            article_Data[counter].set_icon_URL(
+                    app_Articles.get(id).get_Thumb_URL());
+        }
 
         indices[counter] = id;
         return ++counter;

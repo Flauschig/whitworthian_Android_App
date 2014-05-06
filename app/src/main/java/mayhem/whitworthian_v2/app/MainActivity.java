@@ -166,7 +166,7 @@ public class MainActivity extends ActionBarActivity {
             if (image_URL == null) {
                 return null;
             }
-            return  "<body>" +
+            return  "<body style=\"margin: 0; padding: 0\">" +
                     "<img src=" + image_URL + " width=\"100%\" />" +
                     "</body>";
         }

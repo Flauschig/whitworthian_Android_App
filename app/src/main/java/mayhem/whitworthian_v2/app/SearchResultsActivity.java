@@ -98,11 +98,17 @@ public class SearchResultsActivity extends Activity {
         for(int i = 0; i < search_Articles.size(); i++) {
             this_Article = search_Articles.get(i);
             article_Data[i] = new article_Selection();
-            article_Data[i].set_Icon(this_Article.get_image_ID());
             article_Data[i].set_Viewed(this_Article.get_Viewed());
             article_Data[i].set_Desc(this_Article.get_Desc());
             article_Data[i].set_ID(this_Article.get_Article_ID());
             article_Data[i].set_Title(this_Article.get_Title());
+            article_Data[i].set_Icon(this_Article.get_image_ID());
+
+            if (app_Articles.get(i).get_Has_Thumb()) {
+                   article_Data[i].set_icon_URL(this_Article.get_Thumb_URL());
+            }
+
+
         }
 
     }
