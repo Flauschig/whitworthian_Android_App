@@ -1,10 +1,15 @@
 package mayhem.whitworthian_v2.app;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -84,6 +89,11 @@ public class ArticleViewActivity extends ActionBarActivity {
             case android.R.id.home:
                 finish();
             case mayhem.whitworthian_v2.app.R.id.action_settings:
+                return true;
+            case R.id.action_font_size:
+                android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                FontSizeDialogFragment dialog = new FontSizeDialogFragment();
+                dialog.show(fm, "my dialog");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -172,6 +182,43 @@ public class ArticleViewActivity extends ActionBarActivity {
             my_Genre_Image = R.drawable.ic_launcher;
             getActionBar().setIcon(my_Genre_Image);
 
+        }
+    }
+
+    /**
+     * A dialog fragment that will allow the user to choose a font size
+     */
+    // TODO: Make the app remember which size you chose for all articles
+    public class FontSizeDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.pick_font)
+                    .setItems(R.array.font_sizes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            // Get the webview for the content
+                            WebView wv = (WebView)findViewById(R.id.article_content);
+                            WebSettings ws = wv.getSettings();
+
+                            switch(which){
+                                case 0: // Small
+                                    ws.setTextZoom(100);
+                                    break;
+                                case 1: // Medium
+                                    ws.setTextZoom(150);
+                                    break;
+                                case 2: // Large
+                                    ws.setTextZoom(200);
+                                    break;
+                                default:// Default is small
+                                    ws.setTextZoom(100);
+                                    TextView tv = (TextView) findViewById(R.id.article_title);
+                                    break;
+                            }
+                        }
+                    });
+            return builder.create();
         }
     }
 

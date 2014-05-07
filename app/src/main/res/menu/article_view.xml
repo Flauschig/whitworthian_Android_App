@@ -9,9 +9,8 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
 
-    <item android:id="@+id/action_search"
+    <item android:id="@+id/action_font_size"
         android:icon="@drawable/search_button"
-        android:title="@string/action_search"
-        app:showAsAction="never"
-        android:actionViewClass="android.widget.SearchView"/>
+        android:title="@string/action_font_size"
+        app:showAsAction="never"/>
 </menu>
