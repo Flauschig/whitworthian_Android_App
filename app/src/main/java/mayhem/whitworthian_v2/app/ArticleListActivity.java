@@ -75,16 +75,6 @@ public class ArticleListActivity extends ActionBarActivity {
         get_Article_Data(goodies);
     }
 
-    /* After OnCreate, OnCreateOptionsMenu is called under-the-hood Here the search view
-    * is initialized. */
-    //TODO: Add search view
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(mayhem.whitworthian_v2.app.R.menu.article_list, menu);
-        return true;
-    }
-
     /* Handles user input of top action bar */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

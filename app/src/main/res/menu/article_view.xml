@@ -3,12 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="mayhem.whitworthian_v2.app.ArticleViewActivity" >
 
-    
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
-
     <item android:id="@+id/action_font_size"
         android:icon="@drawable/font_size_change"
         android:title="@string/action_font_size"

@@ -16,6 +16,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -143,11 +144,17 @@ public class GenreListActivity extends ActionBarActivity {
     /* Controls the behavior of the application when a genre is clicked.  Takes the name of the
      * genre, and opens a new article list of that genre */
     public void genre_Item_Click(String new_Genre) {
-        Intent article_List = new Intent(this, ArticleListActivity.class);
-        article_List.putExtra("this_Genre", new_Genre);
-        article_List.putParcelableArrayListExtra("my_Articles", app_Articles);
-        article_List.putExtra("first_Instance", false);
-        startActivityForResult(article_List, 1);
+        try {
+            Intent article_List = new Intent(this, ArticleListActivity.class);
+            article_List.putExtra("this_Genre", new_Genre);
+            article_List.putParcelableArrayListExtra("my_Articles", app_Articles);
+            article_List.putExtra("first_Instance", false);
+            startActivityForResult(article_List, 1);
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0017"),
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     /* Locally unpacks and tracks the article data */
@@ -156,7 +163,10 @@ public class GenreListActivity extends ActionBarActivity {
         try{
             this.app_Articles = goodies.getParcelableArrayList("my_Articles");
         }
-        catch(NullPointerException bad){
+        catch(Exception bad){
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0016"),
+                    Toast.LENGTH_SHORT).show();
             this.app_Articles = new ArrayList<article>();
         }
     }
