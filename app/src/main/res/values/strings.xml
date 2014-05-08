@@ -67,4 +67,12 @@
     <string name="title_activity_search">SearchActivity</string>
     <string name="title_activity_search_results">SearchResultsActivity</string>
 
+    <string name="action_font_size">Font Size</string>
+    <string name="pick_font">Pick a font size</string>
+    <string-array name="font_sizes">
+        <item>Small</item>
+        <item>Medium</item>
+        <item>Large</item>
+    </string-array>
+
 </resources>

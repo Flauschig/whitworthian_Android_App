@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 /** This is the ArticleListActivity.
@@ -251,37 +252,49 @@ public class ArticleListActivity extends ActionBarActivity {
             }
             fis.close();
 
-            // Split the String on @, and feed the article IDs into a String array
-            String[] articles = temp.split("@");
+            // Split the String on @, and feed the article IDs into a String List
+            String[] articles_array = temp.split("@");
+            List<String> articles = new ArrayList();
+            for(int i = 0; i < articles_array.length; i++){
+                articles.add(articles_array[i]);
+            }
 
             // If the number of articles is greater than 80, then delete the first half and overwrite the file
-            /* THIS PART DOESN'T WORK YET */
-            if(articles.length > num_Articles * 2){
+            if(articles.size() > num_Articles * 2){
                 String tempStr = "";
                 // Copy the last 40 article titles into a temporary string
                 for(int i = num_Articles; i < num_Articles * 2; i++){
-                    tempStr += articles[i];
+                    tempStr += articles_array[i];
                     tempStr += "@";
                 }
+
+                // Get the new articles array with split(), give it to articles
+                String[] temp_array = tempStr.split("@");
+                articles.clear();
+                for(int i = 0; i < temp_array.length; i++){
+                    articles.add(temp_array[i]);
+                }
+
                 // Overwrite "ArticlesViewed"
                 String FILENAME = "ArticlesViewed";
                 // Write the string to the file "ArticlesViewed"
-                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
+                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
                 for(int i = 0; i < tempStr.length(); i++){
                     fos.write(tempStr.charAt(i));
                 }
             }
 
-            // Check each article ID in articles[], and if it matches
+            // Check each article ID in articles, and if it matches
             // article_Data[j].get_ID(), then it has already been viewed
             // Set article_Data[j].set_Viewed to true.
-            for(int i = 0; i < articles.length; i++){
+            for(int i = 0; i < articles.size(); i++){
                 for(int j = 0; j < article_Data.length; j++){
-                    if(Integer.toString(article_Data[j].get_ID()).equals(articles[i])){
+                    if(Integer.toString(article_Data[j].get_ID()).equals(articles.get(i))){
                         article_Data[j].set_Viewed(true);
                     }
                 }
             }
+
             // Catch exceptions
         } catch (FileNotFoundException e) {
             Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
