@@ -10,7 +10,7 @@
         app:showAsAction="never" />
 
     <item android:id="@+id/action_font_size"
-        android:icon="@drawable/search_button"
+        android:icon="@drawable/font_size_change"
         android:title="@string/action_font_size"
-        app:showAsAction="never"/>
+        app:showAsAction="always"/>
 </menu>

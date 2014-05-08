@@ -185,6 +185,7 @@ public class ArticleViewActivity extends ActionBarActivity {
         }
     }
 
+    public static int font_size = 100;
     /**
      * A dialog fragment that will allow the user to choose a font size
      */
@@ -203,16 +204,20 @@ public class ArticleViewActivity extends ActionBarActivity {
 
                             switch(which){
                                 case 0: // Small
-                                    ws.setTextZoom(100);
+                                    font_size = 100;
+                                    ws.setTextZoom(font_size);
                                     break;
                                 case 1: // Medium
-                                    ws.setTextZoom(150);
+                                    font_size = 150;
+                                    ws.setTextZoom(font_size);
                                     break;
                                 case 2: // Large
-                                    ws.setTextZoom(200);
+                                    font_size = 200;
+                                    ws.setTextZoom(font_size);
                                     break;
                                 default:// Default is small
-                                    ws.setTextZoom(100);
+                                    font_size = 100;
+                                    ws.setTextZoom(font_size);
                                     TextView tv = (TextView) findViewById(R.id.article_title);
                                     break;
                             }
@@ -244,6 +249,9 @@ public class ArticleViewActivity extends ActionBarActivity {
                 //Set the Body
                 final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
 
+                // Set the font size
+                final WebSettings ws = body_Text.getSettings();
+                ws.setTextZoom(font_size);
                 final String mimeType = "text/html";
                 final String encoding = "UTF-8";
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
