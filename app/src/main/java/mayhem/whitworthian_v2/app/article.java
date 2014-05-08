@@ -25,8 +25,10 @@ public class article implements Parcelable {
     private boolean is_Top;
     private boolean viewed;
     private boolean has_Image;
+    private boolean has_Thumb;
     private int image_ID;
     private String image_URL;
+    private String thumb_URL;
 
 
 
@@ -48,11 +50,13 @@ public class article implements Parcelable {
         out.writeString(body);
         out.writeString(desc);
         out.writeString(genre);
-        out.writeByte((byte) (is_Top ? 1: 0));
+        out.writeByte((byte) (is_Top ? 1 : 0));
         out.writeByte((byte) (has_Image ? 1 : 0));
         out.writeByte((byte) (viewed ? 1 : 0));
+        out.writeByte((byte) (has_Thumb ? 1 : 0));
         out.writeInt(image_ID);
         out.writeString(image_URL);
+        out.writeString(thumb_URL);
 
     }
 
@@ -68,8 +72,10 @@ public class article implements Parcelable {
         is_Top = in.readByte() != 0;
         has_Image = in.readByte() != 0;
         viewed = in.readByte() != 0;
+        has_Thumb = in.readByte() != 0;
         image_ID = in.readInt();
         image_URL = in.readString();
+        thumb_URL = in.readString();
     }
 
     /*Part of Parcelable interface
@@ -97,85 +103,11 @@ public class article implements Parcelable {
         this.genre = "";
         this.is_Top = false;
         this.has_Image = false;
+        this.has_Thumb = false;
         this.viewed = false;
         this.image_ID = 0;
         this.image_URL = null;
-    }
-
-    /* Constructor for articles which DO have image URLs */
-    public article(int article_ID, String title, String body, String desc, String genre, boolean is_Top,
-                   boolean has_Image, String image_URL){
-        this.article_ID = article_ID;
-        this.title = title;
-        this.body = body;
-        this.desc = desc;
-        this.genre = genre;
-        this.is_Top = is_Top;
-        this.has_Image = has_Image;
-        this.viewed = false;
-
-        if (this.has_Image)
-        {
-            this.image_URL = image_URL;
-        }
-        else{
-            this.image_URL = null;
-        }
-
-        //Set up default image
-        if (this.genre.equals("News")){
-            this.image_ID = R.drawable.news_box;
-        }
-        else if (this.genre.equals("Sports")){
-            this.image_ID = R.drawable.sports_box;
-        }
-        else if (this.genre.equals("Arts & Culture")){
-            this.image_ID = R.drawable.ac_box;
-        }
-        else if (this.genre.equals("Opinions")){
-            this.image_ID = R.drawable.opinions_box;
-        }
-        else{
-            this.image_ID = R.drawable.ic_launcher;
-        }
-    }
-
-    /* Constructor for articles which DO NOT have image URLs */
-    public article(int article_ID, String title, String body, String desc, String genre,
-                   boolean is_Top, boolean has_Image){
-        this.article_ID = article_ID;
-        this.title = title;
-        this.body = body;
-        this.desc = desc;
-        this.genre = genre;
-        this.is_Top = is_Top;
-        this.has_Image = has_Image;
-        this.viewed = false;
-
-        if (this.has_Image)
-        {
-            this.image_URL = image_URL;
-        }
-        else{
-            this.image_URL = null;
-        }
-
-        //Set up default image
-        if (this.genre.equals("News")){
-            this.image_ID = R.drawable.news_box;
-        }
-        else if (this.genre.equals("Sports")){
-            this.image_ID = R.drawable.sports_box;
-        }
-        else if (this.genre.equals("Arts & Culture")){
-            this.image_ID = R.drawable.ac_box;
-        }
-        else if (this.genre.equals("Opinions")){
-            this.image_ID = R.drawable.opinions_box;
-        }
-        else{
-            this.image_ID = R.drawable.whitworthian_w;
-        }
+        this.thumb_URL = null;
     }
 
 
@@ -195,6 +127,7 @@ public class article implements Parcelable {
     public boolean get_Has_Image(){
         return has_Image;
     }
+    public boolean get_Has_Thumb() { return has_Thumb; }
     public boolean get_Viewed() {return viewed;}
     public int get_image_ID(){
         return image_ID;
@@ -202,6 +135,7 @@ public class article implements Parcelable {
     public String get_image_URL(){
         return image_URL;
     }
+    public String get_Thumb_URL() {return thumb_URL; }
 
     /* Mutators */
     public void set_Article_ID(int id) {this.article_ID = id;}
@@ -227,7 +161,25 @@ public class article implements Parcelable {
             this.image_ID = R.drawable.ic_launcher;
         }}
     public void set_Article_Is_Top(boolean is_Top) {this.is_Top = is_Top;}
-    public void set_Article_Has_Image(boolean has_Image) {this.has_Image = has_Image;}
     public void set_Viewed(boolean viewed) {this.viewed = viewed;}
-    public void set_image_URL(String image_URL) {this.image_URL = image_URL;}
+    public void set_image_URL(String image_URL)
+    {
+        this.image_URL = image_URL;
+        if (this.image_URL == null) {
+            this.has_Image = false;
+        }
+        else {
+            this.has_Image = true;
+        }
+    }
+    public void set_Thumb_URL(String thumb_URL)
+    {
+        this.thumb_URL = thumb_URL;
+        if (this.thumb_URL == null) {
+            this.has_Thumb = false;
+        }
+        else {
+            this.has_Thumb = true;
+        }
+    }
 }

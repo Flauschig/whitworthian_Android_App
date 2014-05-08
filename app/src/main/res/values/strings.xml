@@ -29,6 +29,10 @@
     <string name="connection_fail">Connection Failed</string>
     <string name="whitworthian_red">#CD212F</string>
     <string name="no_search">No Search Results.</string>
+    <string name="ac_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/AC.jpg</string>
+    <string name="news_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/News.jpg</string>
+    <string name="opinions_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/04/Opinions.png</string>
+    <string name="sports_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/Sports.jpg</string>
 
     <string-array name="news_Genres">
         <item>Top News</item>
