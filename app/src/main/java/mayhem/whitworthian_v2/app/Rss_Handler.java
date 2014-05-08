@@ -93,11 +93,15 @@ public class Rss_Handler{
         });
         item.getChild("http://search.yahoo.com/mrss/", "thumbnail").setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
-                if (check_Image(attributes.getValue("", "url"))) {
-                    current_Article.set_Thumb_URL(attributes.getValue("", "url"));
-                } else {
-                    current_Article.set_Thumb_URL(null);
+                String thumb_String = attributes.getValue("", "url");
+                if (thumb_String.contains((".png"))) {
+                    thumb_String = thumb_String.replace(".png", "-186x186.png");
                 }
+                else if (thumb_String.contains(".jpg")) {
+                    thumb_String = thumb_String.replace(".jpg", "-186x186.jpg");
+                }
+                current_Article.set_Thumb_URL(thumb_String);
+
             }
         });
         Xml.parse(is, Xml.Encoding.UTF_8, rss.getContentHandler());

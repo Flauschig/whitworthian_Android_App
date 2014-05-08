@@ -12,7 +12,7 @@
 
     <style name="old_title" parent="@style/AppTheme">
         <item name="android:textSize">18sp</item>
-        <item name="android:textStyle">italic</item>
+        <item name="android:textStyle">bold|italic</item>
     </style>
 
     <style name="old_desc" parent="@style/AppTheme">

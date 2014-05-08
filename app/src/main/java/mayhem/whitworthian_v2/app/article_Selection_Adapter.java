@@ -71,7 +71,7 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
             if (data[position].get_Viewed()) {
                 holder.txt_Title.setTextAppearance(this.context, R.style.old_title);
                 holder.txt_Desc.setTextAppearance(this.context, R.style.old_desc);
-                rowView.setBackgroundColor(Color.parseColor("#C0C0C0"));
+                rowView.setBackgroundColor(Color.parseColor(context.getString(R.string.clicked_grey)));
             }
             else {
                 holder.txt_Title.setTextAppearance(this.context, R.style.new_title);
@@ -80,7 +80,6 @@ public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
         catch(NullPointerException bad) {
             bad.printStackTrace();
         }
-
         return rowView;
     }
 
