@@ -72,7 +72,6 @@ public class ArticleListActivity extends ActionBarActivity {
         Bundle goodies = getIntent().getExtras();
         setup_ActionBar_Appearance(goodies);
         get_Article_Data(goodies);
-
     }
 
     /* After OnCreate, OnCreateOptionsMenu is called under-the-hood Here the search view
@@ -97,8 +96,10 @@ public class ArticleListActivity extends ActionBarActivity {
                     myIntent.putParcelableArrayListExtra("my_Articles", app_Articles);
                     try {
                         startActivity(myIntent);
-                    } catch (ActivityNotFoundException e) {
-                        e.printStackTrace();
+                    } catch (Exception bad) {
+                        Toast.makeText(getApplicationContext(),
+                             String.format("A non-fatal error occurred! \nCode: 6d617968656d-0005"),
+                             Toast.LENGTH_SHORT).show();
                     }
                 }
                 else {
@@ -123,13 +124,19 @@ public class ArticleListActivity extends ActionBarActivity {
         try{
             this.app_Articles = goodies.getParcelableArrayList("my_Articles");
         }
-        catch(NullPointerException bad){
+        catch(Exception bad){
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0003"),
+                    Toast.LENGTH_SHORT).show();
             this.app_Articles = new ArrayList<article>();
         }
         try{
             this.my_Instance = goodies.getBoolean("first_Instance");
         }
-        catch(NullPointerException bad){
+        catch(Exception bad){
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0004"),
+                    Toast.LENGTH_SHORT).show();
             this.my_Instance = false;
         }
     }
@@ -139,7 +146,14 @@ public class ArticleListActivity extends ActionBarActivity {
 
         try{
             my_Genre = goodies.getString("this_Genre");
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0001"),
+                    Toast.LENGTH_SHORT).show();
+            my_Genre = getResources().getString(R.string.news);
+        }
 
+        try{
             //Set up action bar Title
             if (my_Genre.equals(getResources().getString(R.string.top)))
                 setTitle(R.string.app_name);
@@ -162,9 +176,11 @@ public class ArticleListActivity extends ActionBarActivity {
             } else {
                 my_Image = R.drawable.ic_launcher;
                 getActionBar().setIcon(my_Image);
-
             }
-        } catch (NullPointerException bad) {
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0002"),
+                    Toast.LENGTH_SHORT).show();
             my_Genre = getResources().getString(R.string.top);
         }
 
@@ -177,6 +193,7 @@ public class ArticleListActivity extends ActionBarActivity {
      * all other genres are tracked by their genre strings.
      */
     protected void fill_Article_Local_Data() {
+        try{
         //Figure out how many articles there are
         if (!(my_Genre.equals(getResources().getString(R.string.top)))) { //Top News
             for (int i = 0; i < app_Articles.size(); i++) {
@@ -197,7 +214,7 @@ public class ArticleListActivity extends ActionBarActivity {
 
         //Go through all articles and pick out the ones that we want to look at.
         int counter = 0;
-        if (!(my_Genre.equals(getResources().getString(R.string.top)))){  //Top News
+        if (!(my_Genre.equals(getResources().getString(R.string.top)))){  //All except Top News
             for (int i = 0; i < app_Articles.size(); i++) {
                 if (app_Articles.get(i).get_Genre().equals(my_Genre))
                 {   counter = set_List_Info(counter, i); }
@@ -205,11 +222,16 @@ public class ArticleListActivity extends ActionBarActivity {
             readFile("ArticlesViewed");
         }
         else {
-            for (int i = 0; i < app_Articles.size(); i++) { //Other genres
+            for (int i = 0; i < app_Articles.size(); i++) { //Top News
                 if (app_Articles.get(i).is_Top())
                 {   counter = set_List_Info(counter, i); }
             }
             readFile("ArticlesViewed");
+        }
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0006"),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -262,9 +284,9 @@ public class ArticleListActivity extends ActionBarActivity {
             }
             // Catch exceptions
         } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT);
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -304,6 +326,14 @@ public class ArticleListActivity extends ActionBarActivity {
     protected void set_Article_List_Adapter(View V) {
         //Then adapt the list to the proper format with the proper data
         get_Article_List(V);
+        if (article_Data == null) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0007"),
+                    Toast.LENGTH_SHORT).show();
+            //TODO: Set "no data" view.  Give user option to refresh.
+            return;
+        }
+
         adapt_List(article_Data);
     }
 
@@ -340,12 +370,18 @@ public class ArticleListActivity extends ActionBarActivity {
             }
         }
 
+        try {
         article_Data[position].set_Viewed(true);
         app_Articles.get(indices[position]).set_Viewed(true);
         Intent article_View = new Intent(this, ArticleViewActivity.class);
         article_View.putExtra("my_Genre", my_Genre);
         article_View.putExtra("my_Article", app_Articles.get(indices[position]));
         startActivityForResult(article_View, 1);
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0008"),
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     /* Handles returning data from article View */
@@ -377,7 +413,6 @@ public class ArticleListActivity extends ActionBarActivity {
 
             //Fills the article list with the appropriate articles
             fill_Article_Local_Data();
-            get_Article_List(root_View);
             set_Article_List_Adapter(root_View);
 
             //Sets up an event handler which waits for an article to be clicked on,
