@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.Image;
 import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
@@ -24,6 +25,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -74,7 +76,6 @@ public class ArticleViewActivity extends ActionBarActivity {
 
     /*After OnCreate, OnCreateOptionsMenu is called under-the-hood Here the search view
     * is initialized. */
-    //TODO: Add Search Button
      @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -102,32 +103,42 @@ public class ArticleViewActivity extends ActionBarActivity {
 
     /*Sets the article banner Image using my_Image_ID */
     private void set_Banner_Image(View V) {
-
-        final ImageView image_Box = (ImageView) V.findViewById(R.id.article_banner);
-        if (my_Image_ID == R.drawable.news_box) {
-            image_Box.setImageResource(R.drawable.news_bar);
-        } else if (my_Image_ID == R.drawable.opinions_box) {
-            image_Box.setImageResource(R.drawable.opinions_bar);
-        } else if (my_Image_ID == R.drawable.ac_box) {
-            image_Box.setImageResource(R.drawable.ac_bar);
-        } else if (my_Image_ID == R.drawable.sports_box) {
-            image_Box.setImageResource(R.drawable.sports_bar);
+        ImageView image_Box = null;
+        try {
+            image_Box = (ImageView) V.findViewById(R.id.article_banner);
+            if (my_Image_ID == R.drawable.news_box) {
+                image_Box.setImageResource(R.drawable.news_bar);
+            } else if (my_Image_ID == R.drawable.opinions_box) {
+                image_Box.setImageResource(R.drawable.opinions_bar);
+            } else if (my_Image_ID == R.drawable.ac_box) {
+                image_Box.setImageResource(R.drawable.ac_bar);
+            } else if (my_Image_ID == R.drawable.sports_box) {
+                image_Box.setImageResource(R.drawable.sports_bar);
+            }
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("Failed to Load Banner Image! \nCode: 6d617968656d-0014"),
+                    Toast.LENGTH_SHORT).show();
+            if (image_Box != null) {
+                image_Box.setVisibility(View.GONE);
+            }
         }
+
 
     }
 
     /* Picks out the proper article from app_Articles and fills in all appropriate data locally */
     protected void get_Article_Data(Bundle goodies) {
-
         //Pull out important information
         try{
             this.my_Article = goodies.getParcelable("my_Article");
-            //this.my_ID = goodies.getInt("my_ID");
-            //this.list_Instance = goodies.getBoolean("first_Instance");
-            //this.app_Articles = goodies.getParcelableArrayList("my_Articles");
         }
-        catch(NullPointerException bad){
-            bad.printStackTrace();
+        catch(Exception bad){
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occured! \nCode: 6d617968656d-0015"),
+                    Toast.LENGTH_SHORT).show();
+            my_Article = new article();
+            return;
         }
         //my_Body = Html.fromHtml(my_Article.get_Body());
         my_Body = my_Article.get_Body();
@@ -141,38 +152,41 @@ public class ArticleViewActivity extends ActionBarActivity {
         //Try to get the genre, if all else fails, set it as top news
         try{
             my_Genre = goodies.getString("my_Genre");
+        }catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0009"),
+                    Toast.LENGTH_SHORT).show();
+            my_Genre = getResources().getString(R.string.news);
         }
-        catch(NullPointerException bad){
-            my_Genre = "Top News";
-        }
+        try{
+            //Set up action bar Title
+            if (my_Genre.equals(getResources().getString(R.string.top)))
+                setTitle(R.string.app_name);
+            else
+                setTitle(my_Genre);
 
-        //Set up action bar Title
-        if (my_Genre.equals(getResources().getString(R.string.top)))
-            setTitle(getResources().getString(R.string.app_name));
-        else
-            setTitle(my_Genre);
-
-        //Set up action bar image
-        if (my_Genre.equals(getResources().getString(R.string.news))){
-            my_Genre_Image = R.drawable.news_box;
-            getActionBar().setIcon(my_Genre_Image);
-        }
-        else if (my_Genre.equals(getResources().getString(R.string.sports))){
-            my_Genre_Image = R.drawable.sports_box;
-            getActionBar().setIcon(my_Genre_Image);
-        }
-        else if (my_Genre.equals(getResources().getString(R.string.arts_culture))){
-            my_Genre_Image = R.drawable.ac_box;
-            getActionBar().setIcon(my_Genre_Image);
-        }
-        else if (my_Genre.equals(getResources().getString(R.string.opinions))){
-            my_Genre_Image = R.drawable.opinions_box;
-            getActionBar().setIcon(my_Genre_Image);
-        }
-        else{
-            my_Genre_Image = R.drawable.ic_launcher;
-            getActionBar().setIcon(my_Genre_Image);
-
+            //Set up action bar image
+            if (my_Genre.equals(getResources().getString(R.string.news))) {
+                my_Genre_Image = R.drawable.news_box;
+                getActionBar().setIcon(my_Genre_Image);
+            } else if (my_Genre.equals(getResources().getString(R.string.sports))) {
+                my_Genre_Image = R.drawable.sports_box;
+                getActionBar().setIcon(my_Genre_Image);
+            } else if (my_Genre.equals(getResources().getString(R.string.arts_culture))) {
+                my_Genre_Image = R.drawable.ac_box;
+                getActionBar().setIcon(my_Genre_Image);
+            } else if (my_Genre.equals(getResources().getString(R.string.opinions))) {
+                my_Genre_Image = R.drawable.opinions_box;
+                getActionBar().setIcon(my_Genre_Image);
+            } else {
+                my_Genre_Image = R.drawable.ic_launcher;
+                getActionBar().setIcon(my_Genre_Image);
+            }
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0010"),
+                    Toast.LENGTH_SHORT).show();
+            my_Genre = getResources().getString(R.string.top);
         }
     }
 
@@ -232,47 +246,71 @@ public class ArticleViewActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_article_view,
                     container, false);
 
+            //Initialize Variables
+            WebView image = null;
+            TextView title_Text = null;
+            WebView body_Text = null;
+			WebSettings ws = null;
+            final String mimeType = "text/html";
+            final String encoding = "UTF-8";
+
+            //Set the image, if it exists
             try {
-                //Set the image, if it exists
-                final WebView image = (WebView) rootView.findViewById(R.id.article_image);
-                final String mimeType = "text/html";
-                final String encoding = "UTF-8";
+                image = (WebView) rootView.findViewById(R.id.article_image);
                 if (my_Article.get_Has_Image()) {
                     image.loadDataWithBaseURL("", my_Article.get_image_URL(), mimeType, encoding, "");
                     image.setBackgroundColor(Color.argb(1, 0, 0, 0));
-                }
-                else {
+                } else {
                     image.setVisibility(View.GONE);
                 }
+            } catch (Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("Failed to Load Image! \nCode: 6d617968656d-0011"),
+                        Toast.LENGTH_SHORT).show();
+                if (image != null) {
+                    image.setVisibility(View.GONE);
+                }
+            }
 
-                //Set the Title
-                final TextView title_Text = (TextView) rootView.findViewById(R.id.article_title);
+                //Set the Title, if it can be found
+            try{
+                title_Text = (TextView) rootView.findViewById(R.id.article_title);
                 title_Text.setText(my_Title);
+            } catch (Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("Failed to Load Title! \nCode: 6d617968656d-0012"),
+                        Toast.LENGTH_SHORT).show();
+                if (title_Text != null) {
+                    title_Text.setText("Oops!  The title exploded...");
+                }
+            }
 
-                //Set the Body
-                final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
-
-                // Set the font size
-                final WebSettings ws = body_Text.getSettings();
+			
+            //Set the Body
+            try {
+                body_Text = (WebView) rootView.findViewById(R.id.article_content);
+				ws = body_Text.getSettings();
                 ws.setTextZoom(font_size);
-
                 body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
-                //Makes webview background transparent, not white.
+                //Makes webview background NEARLY transparent, not white.
                 body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
                 //Scales in-article images to fit screen width
                 body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 
-
-
-                //Set the Image
-                set_Banner_Image(rootView);
-
-
+            } catch (Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("Failed to Load Article Body! \nCode: 6d617968656d-0013"),
+                        Toast.LENGTH_SHORT).show();
+                if (body_Text != null) {
+                    body_Text.setVisibility(View.GONE);
+                }
             }
-            catch(NullPointerException bad){
-                bad.printStackTrace();
-            }
-            return rootView;
+
+            //Set the Image
+            set_Banner_Image(rootView);
+
+
+                return rootView;
         }
     }
 
