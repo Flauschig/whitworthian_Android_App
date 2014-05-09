@@ -54,7 +54,13 @@ public class GenreListActivity extends ActionBarActivity {
         handleIntent(getIntent());
 
         //The genre list view is always titled "The Whitworthian"
-        setTitle(getResources().getString(R.string.app_name));
+        try{
+            setTitle(getResources().getString(R.string.app_name));
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0020"),
+                    Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -64,16 +70,19 @@ public class GenreListActivity extends ActionBarActivity {
      public boolean onCreateOptionsMenu(Menu menu) {
          // Inflate the menu; this adds items to the action bar if it is present.
          getMenuInflater().inflate(R.menu.genre_list, menu);
+         SearchManager searchManager = null;
 
          // Make search button clickable
-         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
          try {
+             searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
              SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                      .getActionView();
              searchView.setSearchableInfo(searchManager
                      .getSearchableInfo(getComponentName()));
-         } catch (NullPointerException bad) {
-             bad.printStackTrace();
+         } catch (Exception bad) {
+             Toast.makeText(getApplicationContext(),
+                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0018"),
+                     Toast.LENGTH_LONG).show();
          }
 
         return super.onCreateOptionsMenu(menu);
@@ -82,14 +91,12 @@ public class GenreListActivity extends ActionBarActivity {
     /*Handles all input for the top action bar. */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) { //Settings
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                onSearchRequested();
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        else if (id == R.id.action_search) { //Search
-            onSearchRequested();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /*Stuff gets weird here.  When search is called, we actually briefly open another instance
@@ -98,10 +105,16 @@ public class GenreListActivity extends ActionBarActivity {
     @Override
     public void startActivity(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            try{
             intent.putParcelableArrayListExtra("my_Articles", app_Articles);
             super.startActivity(intent);
             finish();
             return;
+            } catch (Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("A non-fatal error occurred! \nCode: 6d617968656d-0026"),
+                        Toast.LENGTH_LONG).show();
+            }
         }
         super.startActivity(intent);
     }
@@ -111,6 +124,7 @@ public class GenreListActivity extends ActionBarActivity {
     private void handleIntent(Intent intent) {
         // Get the intent, verify the action and get the query
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            try{
             String query = intent.getStringExtra(SearchManager.QUERY);
             // manually launch the real search activity
             final Intent searchIntent = new Intent(getApplicationContext(),
@@ -119,26 +133,49 @@ public class GenreListActivity extends ActionBarActivity {
             searchIntent.putExtra(SearchManager.QUERY, query);
             searchIntent.putParcelableArrayListExtra("my_Articles", app_Articles);
             startActivityForResult(searchIntent, 2);
+            } catch(Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("A non-fatal error occurred! \nCode: 6d617968656d-0019"),
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     /* Fills  the genres array from data in strings.xml */
     protected void fill_Genre_String() {
-        genres = getResources().getStringArray(R.array.news_Genres);
+        try{
+            genres = getResources().getStringArray(R.array.news_Genres);
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0023"),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     /* Gets the ID of the ListView which to displays the genres */
     protected ListView get_Genre_List(View V) {
         if (genre_List == null) {
-            genre_List = (ListView) V.findViewById(R.id.genre_List_View);
+            try {
+                genre_List = (ListView) V.findViewById(R.id.genre_List_View);
+            } catch (Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("A non-fatal error occurred! \nCode: 6d617968656d-0022"),
+                        Toast.LENGTH_LONG).show();
+            }
         }
         return genre_List;
     }
 
     //Sets the list adapter for the genre list.  Displays all text in genre string
     protected void set_Genre_List_Adapter(View V) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, genres);
-        get_Genre_List(V).setAdapter(adapter);
+        try {
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, genres);
+            get_Genre_List(V).setAdapter(adapter);
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0021"),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     /* Controls the behavior of the application when a genre is clicked.  Takes the name of the
@@ -153,7 +190,7 @@ public class GenreListActivity extends ActionBarActivity {
         } catch (Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0017"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -166,7 +203,7 @@ public class GenreListActivity extends ActionBarActivity {
         catch(Exception bad){
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0016"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             this.app_Articles = new ArrayList<article>();
         }
     }
@@ -180,9 +217,9 @@ public class GenreListActivity extends ActionBarActivity {
                 try{
                     this.app_Articles = goodies.getParcelableArrayList("my_Articles");
                 }
-                catch(NullPointerException bad){
-                    //TODO: Something better here.
-                    this.app_Articles = new ArrayList<article>();
+                catch(Exception bad){Toast.makeText(getApplicationContext(),
+                        String.format("A non-fatal error occurred! \nCode: 6d617968656d-0024"),
+                        Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -192,9 +229,10 @@ public class GenreListActivity extends ActionBarActivity {
                 try{
                     this.app_Articles = goodies.getParcelableArrayList("my_Articles");
                 }
-                catch(NullPointerException bad){
-                    //TODO: Something better here.
-                    this.app_Articles = new ArrayList<article>();
+                catch(Exception bad){
+                    Toast.makeText(getApplicationContext(),
+                            String.format("A non-fatal error occurred! \nCode: 6d617968656d-0025"),
+                            Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -217,7 +255,6 @@ public class GenreListActivity extends ActionBarActivity {
 
             //Fills the genre view fragment
             fill_Genre_String();
-            get_Genre_List(rootView);
             set_Genre_List_Adapter(rootView);
 
             //Sets up the genre list to wait for user input & respond to it.

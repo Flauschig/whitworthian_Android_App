@@ -90,7 +90,7 @@ public class ArticleListActivity extends ActionBarActivity {
                     } catch (Exception bad) {
                         Toast.makeText(getApplicationContext(),
                              String.format("A non-fatal error occurred! \nCode: 6d617968656d-0005"),
-                             Toast.LENGTH_SHORT).show();
+                             Toast.LENGTH_LONG).show();
                     }
                 }
                 else {
@@ -101,8 +101,6 @@ public class ArticleListActivity extends ActionBarActivity {
                     setResult(RESULT_OK, data);
                     finish();
                 }
-                return true;
-            case mayhem.whitworthian_v2.app.R.id.action_settings: // Settings button pressed
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -118,7 +116,7 @@ public class ArticleListActivity extends ActionBarActivity {
         catch(Exception bad){
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0003"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             this.app_Articles = new ArrayList<article>();
         }
         try{
@@ -127,7 +125,7 @@ public class ArticleListActivity extends ActionBarActivity {
         catch(Exception bad){
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0004"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             this.my_Instance = false;
         }
     }
@@ -140,7 +138,7 @@ public class ArticleListActivity extends ActionBarActivity {
         } catch(Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0001"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             my_Genre = getResources().getString(R.string.news);
         }
 
@@ -171,7 +169,7 @@ public class ArticleListActivity extends ActionBarActivity {
         } catch (Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0002"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             my_Genre = getResources().getString(R.string.top);
         }
 
@@ -222,7 +220,7 @@ public class ArticleListActivity extends ActionBarActivity {
         } catch(Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0006"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -287,9 +285,9 @@ public class ArticleListActivity extends ActionBarActivity {
 
             // Catch exceptions
         } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
         } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -332,7 +330,7 @@ public class ArticleListActivity extends ActionBarActivity {
         if (article_Data == null) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0007"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             //TODO: Set "no data" view.  Give user option to refresh.
             return;
         }
@@ -369,7 +367,7 @@ public class ArticleListActivity extends ActionBarActivity {
             }
             catch (IOException e){
                 // Catch the IOException
-                Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -383,7 +381,7 @@ public class ArticleListActivity extends ActionBarActivity {
         } catch(Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0008"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
         }
     }
 

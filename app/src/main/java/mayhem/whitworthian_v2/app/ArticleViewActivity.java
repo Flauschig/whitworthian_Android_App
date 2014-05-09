@@ -89,8 +89,6 @@ public class ArticleViewActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
-            case mayhem.whitworthian_v2.app.R.id.action_settings:
-                return true;
             case R.id.action_font_size:
                 android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
                 FontSizeDialogFragment dialog = new FontSizeDialogFragment();
@@ -118,7 +116,7 @@ public class ArticleViewActivity extends ActionBarActivity {
         } catch (Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("Failed to Load Banner Image! \nCode: 6d617968656d-0014"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             if (image_Box != null) {
                 image_Box.setVisibility(View.GONE);
             }
@@ -136,7 +134,7 @@ public class ArticleViewActivity extends ActionBarActivity {
         catch(Exception bad){
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occured! \nCode: 6d617968656d-0015"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             my_Article = new article();
             return;
         }
@@ -155,7 +153,7 @@ public class ArticleViewActivity extends ActionBarActivity {
         }catch(Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0009"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             my_Genre = getResources().getString(R.string.news);
         }
         try{
@@ -185,7 +183,7 @@ public class ArticleViewActivity extends ActionBarActivity {
         } catch (Exception bad) {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0010"),
-                    Toast.LENGTH_SHORT).show();
+                    Toast.LENGTH_LONG).show();
             my_Genre = getResources().getString(R.string.top);
         }
     }
@@ -266,7 +264,7 @@ public class ArticleViewActivity extends ActionBarActivity {
             } catch (Exception bad) {
                 Toast.makeText(getApplicationContext(),
                         String.format("Failed to Load Image! \nCode: 6d617968656d-0011"),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
                 if (image != null) {
                     image.setVisibility(View.GONE);
                 }
@@ -279,7 +277,7 @@ public class ArticleViewActivity extends ActionBarActivity {
             } catch (Exception bad) {
                 Toast.makeText(getApplicationContext(),
                         String.format("Failed to Load Title! \nCode: 6d617968656d-0012"),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
                 if (title_Text != null) {
                     title_Text.setText("Oops!  The title exploded...");
                 }
@@ -300,7 +298,7 @@ public class ArticleViewActivity extends ActionBarActivity {
             } catch (Exception bad) {
                 Toast.makeText(getApplicationContext(),
                         String.format("Failed to Load Article Body! \nCode: 6d617968656d-0013"),
-                        Toast.LENGTH_SHORT).show();
+                        Toast.LENGTH_LONG).show();
                 if (body_Text != null) {
                     body_Text.setVisibility(View.GONE);
                 }

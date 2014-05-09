@@ -66,33 +66,30 @@ public class MainActivity extends ActionBarActivity {
         }
 
 
-        fill_URLs(); // fill url array
-
         app_Articles = null;
+        fill_URLs(); // fill url array
     }
 
     /* Inflates options menu without functionality */
-    //TODO: Add a refresh if the program loses internet connection, or something of the sort
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-
-
         return true;
     }
 
     /*Fills the URL string with all appropriate feeds */
     private void fill_URLs() {
         try{
-            urls[0] = new URL("http://www.thewhitworthian.com/feed/");
-            urls[1] = new URL("http://www.thewhitworthian.com/category/news/feed/");
-            urls[2] = new URL("http://www.thewhitworthian.com/category/sports/feed/");
-            urls[3] = new URL("http://www.thewhitworthian.com/category/opinions/feed/");
-            urls[4] = new URL("http://www.thewhitworthian.com/category/arts-and-culture/feed/");
+            String[] url_String = getResources().getStringArray(R.array.news_urls);
+            for(int i = 0; i < url_String.length; i++) {
+                urls[i] = new URL(url_String[i]);
+            }
         }
-        catch (MalformedURLException bad1) {
-            bad1.printStackTrace();
+        catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0037"),
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -119,22 +116,11 @@ public class MainActivity extends ActionBarActivity {
                     } else {
                         return null;
                     }
-
-                } catch (IOException bad) {
-                    bad.printStackTrace();
-                    break;
-                } catch (SAXException bad) {
-                    bad.printStackTrace();
-                    break;
-                } catch (Exception e) {
-                    if (e != null) {
-                        e.printStackTrace();
-                    } else {
-                        return null;
-                    }
-
+                } catch (Exception bad) {
+                    Toast.makeText(getApplicationContext(),
+                            String.format("Failed to retrieve articles! \nCode: 6d617968656d-0038"),
+                            Toast.LENGTH_LONG).show();
                 }
-
             }
             publishProgress(new Integer[]{NUM_GENRES+1});
 
@@ -178,6 +164,8 @@ public class MainActivity extends ActionBarActivity {
             boolean accept = true; //Only accept articles that aren't in the list already
             ArrayList<article> all_articles = new ArrayList<article>();
 
+            try{
+
             for(int i = 0; i < NUM_GENRES; i++) { //loop through genres
                 for(int j = 0; j < arrays[i].size(); j++) { //loop through articles in this genre
                     for(int k = 0; k < all_articles.size(); k++) { //loop through stored articles
@@ -199,6 +187,12 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
             return all_articles;
+            } catch(Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("Failed to retrieve articles! \nCode: 6d617968656d-0039"),
+                        Toast.LENGTH_LONG).show();
+            }
+            return null;
         }
 
         /* Updates load text on splash page */
@@ -237,15 +231,21 @@ public class MainActivity extends ActionBarActivity {
                 return;
             }
 
-            app_Articles = result;
-            Intent article_List = new Intent(MainActivity.this, ArticleListActivity.class);
-            article_List.putExtra("this_Genre", "Top News");
-            article_List.putParcelableArrayListExtra("my_Articles", app_Articles);
-            article_List.putExtra("first_Instance", true);
-            startActivity(article_List);
+            try{
+                app_Articles = result;
+                Intent article_List = new Intent(MainActivity.this, ArticleListActivity.class);
+                article_List.putExtra("this_Genre", "Top News");
+                article_List.putParcelableArrayListExtra("my_Articles", app_Articles);
+                article_List.putExtra("first_Instance", true);
+                startActivity(article_List);
 
-            // close this activity
-            finish();
+                // close this activity
+                finish();
+            } catch(Exception bad) {
+                Toast.makeText(getApplicationContext(),
+                        String.format("A non-fatal error occured! \nCode: 6d617968656d-0040"),
+                        Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -259,10 +259,16 @@ public class MainActivity extends ActionBarActivity {
             case R.id.action_settings:
                 return true;
             case R.id.action_refresh:
-                my_Progress_Bar.setVisibility(View.VISIBLE);
-                update_Progress(getResources().getString(R.string.load_text));
-                new FetchArticlesTask().execute(this.urls);
-                return true;
+                try {
+                    my_Progress_Bar.setVisibility(View.VISIBLE);
+                    update_Progress(getResources().getString(R.string.load_text));
+                    new FetchArticlesTask().execute(this.urls);
+                    return true;
+                } catch(Exception bad) {
+                    Toast.makeText(getApplicationContext(),
+                            String.format("A non-fatal error occured! \nCode: 6d617968656d-0041"),
+                            Toast.LENGTH_LONG).show();
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -270,8 +276,14 @@ public class MainActivity extends ActionBarActivity {
 
     /*Initialize the progress bar & text */
     public void init_Progress_Bar(View view) {
-        my_Progress_Bar = (ProgressBar) view.findViewById(R.id.news_Load_Bar);
-        my_Progress_Text = (TextView) view.findViewById(R.id.progress_Text);
+        try{
+            my_Progress_Bar = (ProgressBar) view.findViewById(R.id.news_Load_Bar);
+            my_Progress_Text = (TextView) view.findViewById(R.id.progress_Text);
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occured! \nCode: 6d617968656d-0042"),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     /*Hide progress bar */
@@ -281,7 +293,9 @@ public class MainActivity extends ActionBarActivity {
 
     /*Update text in progress textview */
     public void update_Progress(String update){
-        my_Progress_Text.setText(update);
+        if (my_Progress_Text != null) {
+            my_Progress_Text.setText(update);
+        }
     }
 
     /**
