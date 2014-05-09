@@ -70,20 +70,6 @@ public class GenreListActivity extends ActionBarActivity {
      public boolean onCreateOptionsMenu(Menu menu) {
          // Inflate the menu; this adds items to the action bar if it is present.
          getMenuInflater().inflate(R.menu.genre_list, menu);
-         SearchManager searchManager = null;
-
-         // Make search button clickable
-         try {
-             searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-             SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
-                     .getActionView();
-             searchView.setSearchableInfo(searchManager
-                     .getSearchableInfo(getComponentName()));
-         } catch (Exception bad) {
-             Toast.makeText(getApplicationContext(),
-                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0018"),
-                     Toast.LENGTH_LONG).show();
-         }
 
         return super.onCreateOptionsMenu(menu);
     }
