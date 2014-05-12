@@ -26,6 +26,7 @@ public class Rss_Handler{
     private ArrayList<article> my_Articles;
     private article current_Article;
     private Context ctxt;
+    private ArrayList<String> categories;
 
     public Rss_Handler(Context ctxt) {
         my_Articles = new ArrayList<article>();
@@ -43,6 +44,7 @@ public class Rss_Handler{
             }
             public void start(Attributes attributes) {
                 current_Article = new article();
+                categories = new ArrayList<String>();
             }
         });
         item.getChild("title").setEndTextElementListener(new EndTextElementListener() {
@@ -66,6 +68,7 @@ public class Rss_Handler{
         });
         item.getChild("category").setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
+                categories.add(body);
                 if (body.contains("Sports")) {
                     current_Article.set_Article_Genre("Sports");
                 } else if (body.contains("News")) {
@@ -127,6 +130,7 @@ public class Rss_Handler{
     }
 
     public void onItem() {
+        current_Article.set_Categories(categories);
         my_Articles.add(current_Article);
         return;
     }

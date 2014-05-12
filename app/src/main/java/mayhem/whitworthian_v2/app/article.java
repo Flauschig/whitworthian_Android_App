@@ -3,6 +3,8 @@ package mayhem.whitworthian_v2.app;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 /**
  * Primary class for handling article data.  Contains the following elements:
  *  article_ID:         used by application to easily distinguish articles
@@ -29,6 +31,7 @@ public class article implements Parcelable {
     private int image_ID;
     private String image_URL;
     private String thumb_URL;
+    private String[] categories;
 
 
 
@@ -57,6 +60,7 @@ public class article implements Parcelable {
         out.writeInt(image_ID);
         out.writeString(image_URL);
         out.writeString(thumb_URL);
+        out.writeStringArray(categories);
 
     }
 
@@ -76,6 +80,7 @@ public class article implements Parcelable {
         image_ID = in.readInt();
         image_URL = in.readString();
         thumb_URL = in.readString();
+        categories = in.createStringArray();
     }
 
     /*Part of Parcelable interface
@@ -108,6 +113,7 @@ public class article implements Parcelable {
         this.image_ID = 0;
         this.image_URL = null;
         this.thumb_URL = null;
+        this.categories = null;
     }
 
 
@@ -136,6 +142,7 @@ public class article implements Parcelable {
         return image_URL;
     }
     public String get_Thumb_URL() {return thumb_URL; }
+    public String[] get_Categories() { return categories;}
 
     /* Mutators */
     public void set_Article_ID(int id) {this.article_ID = id;}
@@ -180,6 +187,19 @@ public class article implements Parcelable {
         }
         else {
             this.has_Thumb = true;
+        }
+    }
+    public void set_Categories(ArrayList<String> cats)
+    {
+        if (cats.size() > 0) {
+            categories = new String[cats.size()];
+        } else {
+            categories = null;
+            return;
+        }
+
+        for (int i = 0; i < cats.size(); i++) {
+            categories[i] = cats.get(i);
         }
     }
 }

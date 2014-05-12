@@ -114,6 +114,11 @@ public class SearchResultsActivity extends Activity {
         if (this_Article.get_Title().toLowerCase().contains(query.toLowerCase())) {
             return true;
         }
+        for (int i = 0; i < this_Article.get_Categories().length; i++) {
+            if (this_Article.get_Categories()[i].toLowerCase().contains(query.toLowerCase())) {
+                return true;
+            }
+        }
         return false;
     }
 
