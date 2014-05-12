@@ -44,6 +44,7 @@ import javax.xml.parsers.SAXParserFactory;
  *      alert:              A dialog that tells the user something went bad
  *      my_Progress_Bar:    The scroll wheel that tells the user that load is occuring
  *      my_Progress_Text:   Gives user idea that progress is being made on loading data
+ *      locked:             Ensures that only one loading thread can exist at a time.
  */
 public class MainActivity extends ActionBarActivity {
     private ArrayList<article> app_Articles;
@@ -51,6 +52,7 @@ public class MainActivity extends ActionBarActivity {
     private final URL urls[] = new URL[NUM_GENRES];
     private ProgressBar my_Progress_Bar;
     private TextView my_Progress_Text;
+    private boolean locked;
 
 
     /* Creates the layout, fills the urls array, and fetches all data from thewhitworthian.com */
@@ -58,13 +60,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        locked = false;
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
-
 
         app_Articles = null;
         fill_URLs(); // fill url array
@@ -166,33 +168,33 @@ public class MainActivity extends ActionBarActivity {
 
             try{
 
-            for(int i = 0; i < NUM_GENRES; i++) { //loop through genres
-                for(int j = 0; j < arrays[i].size(); j++) { //loop through articles in this genre
-                    for(int k = 0; k < all_articles.size(); k++) { //loop through stored articles
-                        //Don't accept articles we already have
-                        if (all_articles.get(k).get_Title().equals(arrays[i].get(j).get_Title()))
-                        { accept = false;}
+                for(int i = 0; i < NUM_GENRES; i++) { //loop through genres
+                    for(int j = 0; j < arrays[i].size(); j++) { //loop through articles in this genre
+                        for(int k = 0; k < all_articles.size(); k++) { //loop through stored articles
+                            //Don't accept articles we already have
+                            if (all_articles.get(k).get_Title().equals(arrays[i].get(j).get_Title()))
+                            { accept = false;}
+                        }
+                        //Mark top news articles as top news
+                        if (i == 0) { arrays[i].get(j).set_Article_Is_Top(true); }
+                        else { arrays[i].get(j).set_Article_Is_Top(false); }
+
+                        //format URLs of images
+                        arrays[i].get(j).set_image_URL(format_Image(arrays[i].get(j).get_image_URL()));
+                        arrays[i].get(j).set_Thumb_URL(format_Image(arrays[i].get(j).get_Thumb_URL()));
+
+                        //Add articles we're accepting to the array
+                        if (accept) { all_articles.add(arrays[i].get(j)); }
+                        else { accept = true; }
                     }
-                    //Mark top news articles as top news
-                    if (i == 0) { arrays[i].get(j).set_Article_Is_Top(true); }
-                    else { arrays[i].get(j).set_Article_Is_Top(false); }
-
-                    //format URLs of images
-                    arrays[i].get(j).set_image_URL(format_Image(arrays[i].get(j).get_image_URL()));
-                    arrays[i].get(j).set_Thumb_URL(format_Image(arrays[i].get(j).get_Thumb_URL()));
-
-                    //Add articles we're accepting to the array
-                    if (accept) { all_articles.add(arrays[i].get(j)); }
-                    else { accept = true; }
                 }
-            }
-            return all_articles;
+                return all_articles;
             } catch(Exception bad) {
                 Toast.makeText(getApplicationContext(),
                         String.format("Failed to retrieve articles! \nCode: 6d617968656d-0039"),
                         Toast.LENGTH_LONG).show();
+                return null;
             }
-            return null;
         }
 
         /* Updates load text on splash page */
@@ -228,6 +230,7 @@ public class MainActivity extends ActionBarActivity {
                         hide_Progress();
                     }
                 });
+                locked = false;
                 return;
             }
 
@@ -260,9 +263,12 @@ public class MainActivity extends ActionBarActivity {
                 return true;
             case R.id.action_refresh:
                 try {
-                    my_Progress_Bar.setVisibility(View.VISIBLE);
-                    update_Progress(getResources().getString(R.string.load_text));
-                    new FetchArticlesTask().execute(this.urls);
+                    if (!(locked)) {
+                        locked = true;
+                        my_Progress_Bar.setVisibility(View.VISIBLE);
+                        update_Progress(getResources().getString(R.string.load_text));
+                        new FetchArticlesTask().execute(this.urls);
+                    }
                     return true;
                 } catch(Exception bad) {
                     Toast.makeText(getApplicationContext(),
@@ -312,7 +318,10 @@ public class MainActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
             init_Progress_Bar(rootView); //Initialize progress bar
-            new FetchArticlesTask().execute(urls); // fetch data
+            if (!(locked)) {
+                locked = true;
+                new FetchArticlesTask().execute(urls); // fetch data
+            }
 
             return rootView;
         }
