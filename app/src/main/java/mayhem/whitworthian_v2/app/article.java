@@ -18,7 +18,7 @@ import java.util.ArrayList;
  *  image_ID:           default image ID based on genre
  *  image_URL:          if has_Image is true, the URL of this article's image.
  */
-public class article implements Parcelable {
+public class Article implements Parcelable {
     private int article_ID;
     private String title;
     private String body;
@@ -67,7 +67,7 @@ public class article implements Parcelable {
     /*Part of Parcelable interface.
         When unpacking a parcel, the program fills data fields in the order laid out below.
      */
-    private article(Parcel in) {
+    private Article(Parcel in) {
         article_ID = in.readInt();
         title = in.readString();
         body = in.readString();
@@ -86,21 +86,21 @@ public class article implements Parcelable {
     /*Part of Parcelable interface
         Creates the parcel.
      */
-    public static final Parcelable.Creator<article> CREATOR
-            = new Parcelable.Creator<article>() {
-        public article createFromParcel(Parcel in) {
-            return new article(in);
+    public static final Parcelable.Creator<Article> CREATOR
+            = new Parcelable.Creator<Article>() {
+        public Article createFromParcel(Parcel in) {
+            return new Article(in);
         }
 
-        public article[] newArray(int size) {
-            return new article[size];
+        public Article[] newArray(int size) {
+            return new Article[size];
         }
     };
 
 
 
     /* Default constructor.     */
-    public article(){
+    public Article(){
         this.article_ID = -1;
         this.title = "";
         this.body = "";

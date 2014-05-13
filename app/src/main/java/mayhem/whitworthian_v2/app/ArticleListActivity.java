@@ -1,16 +1,12 @@
 package mayhem.whitworthian_v2.app;
 
-import mayhem.whitworthian_v2.app.R;
 import android.app.ActionBar;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +15,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /** This is the ArticleListActivity.
  *  Includes the following functionality:
@@ -53,9 +46,9 @@ public class ArticleListActivity extends ActionBarActivity {
     private String my_Genre;
     private int my_Image;
     private boolean my_Instance;
-    private ArrayList<article> app_Articles;
-    private article_Selection article_Data[];
-    article_Selection_Adapter adapter;
+    private ArrayList<Article> app_Articles;
+    private ArticleSelection article_Data[];
+    ArticleSelectionAdapter adapter;
 
 
     /*When this Intent begins, OnCreate is called */
@@ -117,7 +110,7 @@ public class ArticleListActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0003"),
                     Toast.LENGTH_LONG).show();
-            this.app_Articles = new ArrayList<article>();
+            this.app_Articles = new ArrayList<Article>();
         }
         try{
             this.my_Instance = goodies.getBoolean("first_Instance");
@@ -198,7 +191,7 @@ public class ArticleListActivity extends ActionBarActivity {
         }
 
         //Initialize arrays to proper article number
-        article_Data = new article_Selection[num_Articles];
+        article_Data = new ArticleSelection[num_Articles];
         indices = new int[num_Articles];
 
         //Go through all articles and pick out the ones that we want to look at.
@@ -294,7 +287,7 @@ public class ArticleListActivity extends ActionBarActivity {
 
     /* Used to fill article_Data and get important indices of articles arrays */
     private int set_List_Info(int counter, int id) {
-        article_Data[counter] = new article_Selection();
+        article_Data[counter] = new ArticleSelection();
         article_Data[counter].set_Title(
                 app_Articles.get(id).get_Title());
         article_Data[counter].set_Desc(
@@ -339,8 +332,8 @@ public class ArticleListActivity extends ActionBarActivity {
     }
 
     /* Adapts the article List view to display the appropriate data */
-    private void adapt_List(article_Selection[] article_Data) {
-        adapter = new article_Selection_Adapter(this, article_Data);
+    private void adapt_List(ArticleSelection[] article_Data) {
+        adapter = new ArticleSelectionAdapter(this, article_Data);
         article_List.setAdapter(adapter);
     }
 

@@ -2,7 +2,6 @@ package mayhem.whitworthian_v2.app;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 /**
- * This class adapts an article_Selection to the ListView in fragment_article_list by using
+ * This class adapts an ArticleSelection to the ListView in fragment_article_list by using
  * the article_list_item_row layout.
  *
  * contains these elements:
@@ -20,14 +19,14 @@ import android.widget.TextView;
  *
  */
 
-public class article_Selection_Adapter extends ArrayAdapter<article_Selection> {
+public class ArticleSelectionAdapter extends ArrayAdapter<ArticleSelection> {
     private Context context;
     private int layout_Resource_ID;
-    private article_Selection data[] = null;
+    private ArticleSelection data[] = null;
 
 
     /* Constructor */
-    public article_Selection_Adapter(Context context, article_Selection[] data) {
+    public ArticleSelectionAdapter(Context context, ArticleSelection[] data) {
         super(context, R.layout.article_list_item_row, data);
         this.layout_Resource_ID = R.layout.article_list_item_row;
         this.context = context;

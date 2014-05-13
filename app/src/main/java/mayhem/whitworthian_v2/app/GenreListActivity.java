@@ -1,7 +1,6 @@
 package mayhem.whitworthian_v2.app;
 
 import android.app.SearchManager;
-import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ public class GenreListActivity extends ActionBarActivity {
     final int NUM_GENRES = 5;
     private String[] genres = new String[NUM_GENRES];
     private ListView genre_List;
-    private ArrayList<article> app_Articles;
+    private ArrayList<Article> app_Articles;
 
 
     /* Creates the activity, sets the title string, and gets the data for all articles */
@@ -190,7 +188,7 @@ public class GenreListActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occurred! \nCode: 6d617968656d-0016"),
                     Toast.LENGTH_LONG).show();
-            this.app_Articles = new ArrayList<article>();
+            this.app_Articles = new ArrayList<Article>();
         }
     }
 

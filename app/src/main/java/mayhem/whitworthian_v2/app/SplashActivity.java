@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,21 +17,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-/** This is the MainActivity.
+/** This is the SplashActivity.
  *  Includes the following functionality:
  *  -Retrieves article data from RSS feeds
  *  -Opens a Top News Article List
@@ -46,8 +35,8 @@ import javax.xml.parsers.SAXParserFactory;
  *      my_Progress_Text:   Gives user idea that progress is being made on loading data
  *      locked:             Ensures that only one loading thread can exist at a time.
  */
-public class MainActivity extends ActionBarActivity {
-    private ArrayList<article> app_Articles;
+public class SplashActivity extends ActionBarActivity {
+    private ArrayList<Article> app_Articles;
     private final int NUM_GENRES = 5;
     private final URL urls[] = new URL[NUM_GENRES];
     private ProgressBar my_Progress_Bar;
@@ -59,7 +48,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splash);
         locked = false;
 
         if (savedInstanceState == null) {
@@ -76,7 +65,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.splash, menu);
         return true;
     }
 
@@ -96,20 +85,20 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /*Opens up a background AsyncTask which fetches all of the data from the website */
-    private class FetchArticlesTask extends AsyncTask<URL, Integer, ArrayList<article>> {
+    private class FetchArticlesTask extends AsyncTask<URL, Integer, ArrayList<Article>> {
         /*doInBackground is where the action happens, connection is made here, and data is
          * collected.
          */
         //TODO: Fix crash on loss of internet connectivity.
         //TODO: Try to make the data collection and storing cleaner/more efficient
         @Override
-        protected ArrayList<article> doInBackground(URL... urls) {
-            ArrayList<article> arrays[] = new ArrayList[NUM_GENRES];
+        protected ArrayList<Article> doInBackground(URL... urls) {
+            ArrayList<Article> arrays[] = new ArrayList[NUM_GENRES];
             for (int i = 0; i < NUM_GENRES; i++) { // loop through all feeds
                 try {
                     if (is_Network_Connected()) {
                         //Setup for connection
-                        Rss_Handler new_Parser = new Rss_Handler(getApplicationContext());
+                        RssHandler new_Parser = new RssHandler(getApplicationContext());
                         InputStream input = urls[i].openStream();
                         new_Parser.parse(input);
 
@@ -138,7 +127,7 @@ public class MainActivity extends ActionBarActivity {
 
 
         /* Applies justification to all text in the article's body*/
-        private ArrayList<article> clean_Article_Bodies(ArrayList<article> all_Articles) {
+        private ArrayList<Article> clean_Article_Bodies(ArrayList<Article> all_Articles) {
             for(int j = 0; j < all_Articles.size(); j++)
             {
                 //justify text
@@ -162,9 +151,9 @@ public class MainActivity extends ActionBarActivity {
 
 
         /*Combine an array of ArrayLists of articles into one ArrayList of articles. */
-        private ArrayList<article> combine_Arrays (ArrayList<article>[] arrays) {
+        private ArrayList<Article> combine_Arrays (ArrayList<Article>[] arrays) {
             boolean accept = true; //Only accept articles that aren't in the list already
-            ArrayList<article> all_articles = new ArrayList<article>();
+            ArrayList<Article> all_articles = new ArrayList<Article>();
 
             try{
 
@@ -218,7 +207,7 @@ public class MainActivity extends ActionBarActivity {
 
         /* After articles are gathered, this opens up the Top News article list*/
         @Override
-        protected void onPostExecute(ArrayList<article> result) {
+        protected void onPostExecute(ArrayList<Article> result) {
             super.onPostExecute(result);
 
             if(result==null) {
@@ -236,7 +225,7 @@ public class MainActivity extends ActionBarActivity {
 
             try{
                 app_Articles = result;
-                Intent article_List = new Intent(MainActivity.this, ArticleListActivity.class);
+                Intent article_List = new Intent(SplashActivity.this, ArticleListActivity.class);
                 article_List.putExtra("this_Genre", "Top News");
                 article_List.putParcelableArrayListExtra("my_Articles", app_Articles);
                 article_List.putExtra("first_Instance", true);
@@ -315,7 +304,7 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_splash, container, false);
 
             init_Progress_Bar(rootView); //Initialize progress bar
             if (!(locked)) {

@@ -10,7 +10,7 @@ package mayhem.whitworthian_v2.app;
  *  viewed:             a boolean determining whether or not the user has viewed the article
  *  icon_URL:           The article icon's URL, if available.
  */
-public class article_Selection {
+public class ArticleSelection {
     private int icon;
     private String title;
     private int id;
@@ -19,7 +19,7 @@ public class article_Selection {
     private String icon_URL;
 
     /* Default Constructor */
-    public article_Selection(){
+    public ArticleSelection(){
         icon = 0;
         title = null;
         id = 0;
@@ -28,8 +28,8 @@ public class article_Selection {
         icon_URL = null;
     }
 
-    /* Constructor for article_Selection when information is available */
-    public article_Selection(int icon, String title, String desc, int id, boolean viewed){
+    /* Constructor for ArticleSelection when information is available */
+    public ArticleSelection(int icon, String title, String desc, int id, boolean viewed){
         super();
         this.icon = icon;
         this.title = title;

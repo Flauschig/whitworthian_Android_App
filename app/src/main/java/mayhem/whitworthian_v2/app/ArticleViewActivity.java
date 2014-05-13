@@ -2,20 +2,12 @@ package mayhem.whitworthian_v2.app;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.FragmentManager;
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.media.Image;
-import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +18,6 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 
 /** This is the ArticleViewActivity.
  *  Includes the following functionality:
@@ -48,7 +37,7 @@ import java.util.ArrayList;
 public class ArticleViewActivity extends ActionBarActivity {
     private String my_Genre;
     private int my_Genre_Image;
-    private article my_Article;
+    private Article my_Article;
     private int my_Image_ID;
     private String my_Image_URL;
     private String my_Title;
@@ -136,7 +125,7 @@ public class ArticleViewActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(),
                     String.format("A non-fatal error occured! \nCode: 6d617968656d-0015"),
                     Toast.LENGTH_LONG).show();
-            my_Article = new article();
+            my_Article = new Article();
             return;
         }
         //my_Body = Html.fromHtml(my_Article.get_Body());
@@ -243,7 +232,7 @@ public class ArticleViewActivity extends ActionBarActivity {
             body_Text.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    body_Text.scrollTo(0,0);
+                    body_Text.scrollTo(0, 0);
                 }
             }, 300);
             //Makes webview background NEARLY transparent, not white.

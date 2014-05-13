@@ -12,12 +12,15 @@ ____________________________
 <li> Language level: 6.0 </li>
 <li> Theme: Holo Light with Dark Action Bar </li>
 <li> Leave check boxes alone (yes - create custom launcher icon, create activity.  no - mark this project as a library) </li>
-<li> Click next until project creation complete </li>
+<li> Click next 3x </li>
+<li> Rename activity SplashActivity
+<li> Click Finish
 </ol>
 _______________________________________________________
 <ol>
-<li><p>Create the following activities:</p>
+<li><p>Ensure that the following activities are created:</p>
 <ul>
+<li>SplashActivity
 <li>ArticleListActivity
 <li>ArticleViewActivity
 <li>GenreListActivity
@@ -27,10 +30,10 @@ _______________________________________________________
 <li><p>Create the following java classes:</p>
 
 <ul>
-<li>Rss_Handler</li>
-<li>article_Selection </li>
-<li>article_Selection_Adapter </li>
-<li>article </li>
+<li>RssHandler</li>
+<li>ArticleSelection </li>
+<li>ArticleSelectionAdapter </li>
+<li>Article </li>
 </ul>
 
 </li>

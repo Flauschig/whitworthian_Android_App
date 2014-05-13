@@ -1,35 +1,30 @@
 package mayhem.whitworthian_v2.app;
 import android.content.Context;
-import android.content.res.Resources;
 import android.sax.Element;
 import android.sax.ElementListener;
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
 import android.sax.StartElementListener;
 import android.util.Xml;
-import android.view.Display;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * This class handles the RSS feed, and sorts its data.  Contains the following:
  */
-public class Rss_Handler{
-    private ArrayList<article> my_Articles;
-    private article current_Article;
+public class RssHandler {
+    private ArrayList<Article> my_Articles;
+    private Article current_Article;
     private Context ctxt;
     private ArrayList<String> categories;
 
-    public Rss_Handler(Context ctxt) {
-        my_Articles = new ArrayList<article>();
+    public RssHandler(Context ctxt) {
+        my_Articles = new ArrayList<Article>();
         this.ctxt = ctxt;
     }
 
@@ -43,7 +38,7 @@ public class Rss_Handler{
                 onItem();
             }
             public void start(Attributes attributes) {
-                current_Article = new article();
+                current_Article = new Article();
                 categories = new ArrayList<String>();
             }
         });
@@ -134,5 +129,5 @@ public class Rss_Handler{
         my_Articles.add(current_Article);
         return;
     }
-    public ArrayList<article> getArticleList() {return my_Articles;}
+    public ArrayList<Article> getArticleList() {return my_Articles;}
 }

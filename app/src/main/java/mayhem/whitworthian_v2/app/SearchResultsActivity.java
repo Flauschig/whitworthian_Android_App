@@ -26,18 +26,18 @@ import java.util.ArrayList;
  *  Contains the following class variables:
  *      app_Articles        ArrayList containing all article data
  *      search_Articles     ArrayList containing all data for articles which fit search criteria
- *      article_Data        article_Selection array which is used to display articles in the list
- *      adapter             article_Selection_Adapter which adapts article_Data to the view
+ *      article_Data        ArticleSelection array which is used to display articles in the list
+ *      adapter             ArticleSelectionAdapter which adapts article_Data to the view
  *      indices             Integer array containing the index of search articles in app_Articles
  *      search_List         The ListView where search results appear
  *      no_Search           A TextView which informs the user if there are no search results
  */
 public class SearchResultsActivity extends ActionBarActivity {
     /** Variable Declarations */
-    private ArrayList<article> app_Articles;
-    private ArrayList<article> search_Articles;
-    private article_Selection[] article_Data;
-    private article_Selection_Adapter adapter;
+    private ArrayList<Article> app_Articles;
+    private ArrayList<Article> search_Articles;
+    private ArticleSelection[] article_Data;
+    private ArticleSelectionAdapter adapter;
     int indices[];
     private ListView search_List;
     private TextView no_Search;
@@ -49,7 +49,7 @@ public class SearchResultsActivity extends ActionBarActivity {
         setContentView(R.layout.activity_search_results);
 
 
-        search_Articles = new ArrayList<article>();
+        search_Articles = new ArrayList<Article>();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment(getIntent())).commit();
@@ -99,7 +99,7 @@ public class SearchResultsActivity extends ActionBarActivity {
 
         //Tailors data to put it into list format
         try {
-            article_Data = new article_Selection[search_Articles.size()];
+            article_Data = new ArticleSelection[search_Articles.size()];
             indices = new int[search_Articles.size()];
 
             int count = 0;
@@ -120,7 +120,7 @@ public class SearchResultsActivity extends ActionBarActivity {
 
         //Puts data into list
         try {
-            adapter = new article_Selection_Adapter(this, article_Data);
+            adapter = new ArticleSelectionAdapter(this, article_Data);
             search_List.setAdapter(adapter);
         } catch (Exception bad) {
             Toast.makeText(getApplicationContext(),
@@ -131,7 +131,7 @@ public class SearchResultsActivity extends ActionBarActivity {
     }
 
     /* Checks to see if an article fits search criteria.  Returns true if it does. */
-    private boolean fits_Search(article this_Article, String query) {
+    private boolean fits_Search(Article this_Article, String query) {
         //Check title
         if (this_Article.get_Title().toLowerCase().contains(query.toLowerCase())) {
             return true;
@@ -144,10 +144,10 @@ public class SearchResultsActivity extends ActionBarActivity {
         return false;
     }
 
-    /* Fills article_Selection array and prepares it for adaption */
+    /* Fills ArticleSelection array and prepares it for adaption */
     private void fill_Data(int i) {
-        article this_Article = search_Articles.get(i);
-        article_Data[i] = new article_Selection();
+        Article this_Article = search_Articles.get(i);
+        article_Data[i] = new ArticleSelection();
         article_Data[i].set_Viewed(this_Article.get_Viewed());
         article_Data[i].set_Desc(this_Article.get_Desc());
         article_Data[i].set_ID(this_Article.get_Article_ID());
