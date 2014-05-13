@@ -93,17 +93,19 @@ public class SplashActivity extends ActionBarActivity {
         //TODO: Try to make the data collection and storing cleaner/more efficient
         @Override
         protected ArrayList<Article> doInBackground(URL... urls) {
+            RssHandler new_Parser = new RssHandler(getApplicationContext());
             ArrayList<Article> arrays[] = new ArrayList[NUM_GENRES];
             for (int i = 0; i < NUM_GENRES; i++) { // loop through all feeds
                 try {
                     if (is_Network_Connected()) {
                         //Setup for connection
-                        RssHandler new_Parser = new RssHandler(getApplicationContext());
                         InputStream input = urls[i].openStream();
                         new_Parser.parse(input);
-
-                        arrays[i] = new_Parser.getArticleList(); //store the data.
-                        publishProgress(new Integer[]{i});
+                        new_Parser.getArticleList(); //store the data.
+                        publishProgress(new Integer[]{i+1});
+                        if (i == 0) {
+                            new_Parser.mark_Top();
+                        }
                     } else {
                         return null;
                     }
@@ -115,7 +117,7 @@ public class SplashActivity extends ActionBarActivity {
             }
             publishProgress(new Integer[]{NUM_GENRES+1});
 
-            return clean_Article_Bodies(combine_Arrays(arrays)); // Combines the array list
+            return new_Parser.getArticleList();
         }
 
         /*Check to see if connected to a network*/
@@ -126,65 +128,7 @@ public class SplashActivity extends ActionBarActivity {
         }
 
 
-        /* Applies justification to all text in the article's body*/
-        private ArrayList<Article> clean_Article_Bodies(ArrayList<Article> all_Articles) {
-            for(int j = 0; j < all_Articles.size(); j++)
-            {
-                //justify text
-                String body = all_Articles.get(j).get_Body();
-                body = "<body style=\"text-align:justify;\"> " + body + " </body>";
-                all_Articles.get(j).set_Article_Body(body);
-            }
-            return all_Articles;
-        }
 
-        /*Surrounds image urls in appropriate html */
-        private String format_Image(String image_URL) {
-            if (image_URL == null) {
-                return null;
-            }
-            return  "<body style=\"margin: 0; padding: 0\">" +
-                    "<img src=" + image_URL + " width=\"100%\" />" +
-                    "</body>";
-        }
-
-
-
-        /*Combine an array of ArrayLists of articles into one ArrayList of articles. */
-        private ArrayList<Article> combine_Arrays (ArrayList<Article>[] arrays) {
-            boolean accept = true; //Only accept articles that aren't in the list already
-            ArrayList<Article> all_articles = new ArrayList<Article>();
-
-            try{
-
-                for(int i = 0; i < NUM_GENRES; i++) { //loop through genres
-                    for(int j = 0; j < arrays[i].size(); j++) { //loop through articles in this genre
-                        for(int k = 0; k < all_articles.size(); k++) { //loop through stored articles
-                            //Don't accept articles we already have
-                            if (all_articles.get(k).get_Title().equals(arrays[i].get(j).get_Title()))
-                            { accept = false;}
-                        }
-                        //Mark top news articles as top news
-                        if (i == 0) { arrays[i].get(j).set_Article_Is_Top(true); }
-                        else { arrays[i].get(j).set_Article_Is_Top(false); }
-
-                        //format URLs of images
-                        arrays[i].get(j).set_image_URL(format_Image(arrays[i].get(j).get_image_URL()));
-                        arrays[i].get(j).set_Thumb_URL(format_Image(arrays[i].get(j).get_Thumb_URL()));
-
-                        //Add articles we're accepting to the array
-                        if (accept) { all_articles.add(arrays[i].get(j)); }
-                        else { accept = true; }
-                    }
-                }
-                return all_articles;
-            } catch(Exception bad) {
-                Toast.makeText(getApplicationContext(),
-                        String.format("Failed to retrieve articles! \nCode: 6d617968656d-0039"),
-                        Toast.LENGTH_LONG).show();
-                return null;
-            }
-        }
 
         /* Updates load text on splash page */
         @Override
