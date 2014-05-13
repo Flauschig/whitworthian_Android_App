@@ -53,6 +53,7 @@ public class ArticleViewActivity extends ActionBarActivity {
     private String my_Image_URL;
     private String my_Title;
     private String my_Body;
+    private View fragment_View;
     //private Spanned my_Body;
 
     /* Create activity and fragment, Sets up local data */
@@ -204,29 +205,60 @@ public class ArticleViewActivity extends ActionBarActivity {
                             // Get the webview for the content
                             WebView wv = (WebView)findViewById(R.id.article_content);
                             WebSettings ws = wv.getSettings();
+                            final String mimeType = "text/html";
+                            final String encoding = "UTF-8";
+
 
                             switch(which){
                                 case 0: // Small
                                     font_size = 100;
-                                    ws.setTextZoom(font_size);
+                                    set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                                 case 1: // Medium
                                     font_size = 150;
-                                    ws.setTextZoom(font_size);
+                                    set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                                 case 2: // Large
                                     font_size = 200;
-                                    ws.setTextZoom(font_size);
+                                    set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                                 default:// Default is small
                                     font_size = 100;
-                                    ws.setTextZoom(font_size);
-                                    TextView tv = (TextView) findViewById(R.id.article_title);
+                                    set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                             }
                         }
                     });
             return builder.create();
+        }
+    }
+
+    public void set_Webview_Body(View rootView, String mimeType, String encoding) {
+        WebSettings ws = null;
+        try {
+            final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
+            ws = body_Text.getSettings();
+            body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
+            ws.setTextZoom(font_size);
+            body_Text.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    body_Text.scrollTo(0,0);
+                }
+            }, 300);
+            //Makes webview background NEARLY transparent, not white.
+            body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
+            //Scales in-article images to fit screen width
+            body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("Failed to Load Article Body! \nCode: 6d617968656d-0013"),
+                    Toast.LENGTH_LONG).show();
+            final WebView body_Text = (WebView) rootView.findViewById(R.id.article_content);
+            if (body_Text != null) {
+                body_Text.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -244,11 +276,11 @@ public class ArticleViewActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_article_view,
                     container, false);
 
+            fragment_View = rootView;
+
             //Initialize Variables
             WebView image = null;
             TextView title_Text = null;
-            WebView body_Text = null;
-			WebSettings ws = null;
             final String mimeType = "text/html";
             final String encoding = "UTF-8";
 
@@ -285,24 +317,7 @@ public class ArticleViewActivity extends ActionBarActivity {
 
 			
             //Set the Body
-            try {
-                body_Text = (WebView) rootView.findViewById(R.id.article_content);
-				ws = body_Text.getSettings();
-                ws.setTextZoom(font_size);
-                body_Text.loadDataWithBaseURL("", my_Body, mimeType, encoding, "");
-                //Makes webview background NEARLY transparent, not white.
-                body_Text.setBackgroundColor(Color.argb(1, 0, 0, 0));
-                //Scales in-article images to fit screen width
-                body_Text.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-
-            } catch (Exception bad) {
-                Toast.makeText(getApplicationContext(),
-                        String.format("Failed to Load Article Body! \nCode: 6d617968656d-0013"),
-                        Toast.LENGTH_LONG).show();
-                if (body_Text != null) {
-                    body_Text.setVisibility(View.GONE);
-                }
-            }
+            set_Webview_Body(rootView, mimeType, encoding);
 
             //Set the Image
             set_Banner_Image(rootView);
