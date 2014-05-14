@@ -15,9 +15,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,14 +204,14 @@ public class ArticleListActivity extends ActionBarActivity {
                 if (app_Articles.get(i).get_Genre().equals(my_Genre))
                 {   counter = set_List_Info(counter, i); }
             }
-            readFile("ArticlesViewed");
+            readFile(getResources().getString(R.string.article_file));
         }
         else {
             for (int i = 0; i < app_Articles.size(); i++) { //Top News
                 if (app_Articles.get(i).is_Top())
                 {   counter = set_List_Info(counter, i); }
             }
-            readFile("ArticlesViewed");
+            readFile(getResources().getString(R.string.article_file));
         }
         } catch(Exception bad) {
             Toast.makeText(getApplicationContext(),
@@ -217,63 +220,68 @@ public class ArticleListActivity extends ActionBarActivity {
         }
     }
 
-    private void readFile(String file){
+    private void readFile(String file_Name){
 
         // If the article has previously been viewed, then set viewed
         try {
             // Set up the buffer for the input
             byte[] buffer;
             // Set up the file input stream
-            FileInputStream fis = openFileInput(file);
+            File file = new File(getFilesDir()+File.separator+file_Name);
+            if (file.exists()) {
 
-            int c;
-            String temp="";
-            while((c = fis.read()) != -1){
-                temp = temp + Character.toString((char)c);
-            }
-            fis.close();
+                FileInputStream fis = new FileInputStream(file);
 
-            // Split the String on @, and feed the article IDs into a String List
-            String[] articles_array = temp.split("@");
-            List<String> articles = new ArrayList();
-            for(int i = 0; i < articles_array.length; i++){
-                articles.add(articles_array[i]);
-            }
+                int c;
+                String temp="";
+                while((c = fis.read()) != -1){
+                    temp = temp + Character.toString((char)c);
+                }
+                fis.close();
 
-            // If the number of articles is greater than 80, then delete the first half and overwrite the file
-            if(articles.size() > num_Articles * 2){
-                String tempStr = "";
-                // Copy the last 40 article titles into a temporary string
-                for(int i = num_Articles; i < num_Articles * 2; i++){
-                    tempStr += articles_array[i];
-                    tempStr += "@";
+                // Split the String on @, and feed the article IDs into a String List
+                String[] articles_array = temp.split("@");
+                List<String> articles = new ArrayList();
+                for(int i = 0; i < articles_array.length; i++){
+                    articles.add(articles_array[i]);
                 }
 
-                // Get the new articles array with split(), give it to articles
-                String[] temp_array = tempStr.split("@");
-                articles.clear();
-                for(int i = 0; i < temp_array.length; i++){
-                    articles.add(temp_array[i]);
-                }
+                // If the number of articles is greater than 80, then delete the first half and overwrite the file
+                if(articles.size() > num_Articles * 2){
+                    String tempStr = "";
+                    // Copy the last 40 article titles into a temporary string
+                    for(int i = num_Articles; i < num_Articles * 2; i++){
+                        tempStr += articles_array[i];
+                        tempStr += "@";
+                    }
 
-                // Overwrite "ArticlesViewed"
-                String FILENAME = "ArticlesViewed";
-                // Write the string to the file "ArticlesViewed"
-                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
-                for(int i = 0; i < tempStr.length(); i++){
-                    fos.write(tempStr.charAt(i));
-                }
-            }
+                    // Get the new articles array with split(), give it to articles
+                    String[] temp_array = tempStr.split("@");
+                    articles.clear();
+                    for(int i = 0; i < temp_array.length; i++){
+                        articles.add(temp_array[i]);
+                    }
 
-            // Check each article ID in articles, and if it matches
-            // article_Data[j].get_ID(), then it has already been viewed
-            // Set article_Data[j].set_Viewed to true.
-            for(int i = 0; i < articles.size(); i++){
-                for(int j = 0; j < article_Data.length; j++){
-                    if(Integer.toString(article_Data[j].get_ID()).equals(articles.get(i))){
-                        article_Data[j].set_Viewed(true);
+                    // Overwrite "ArticlesViewed"
+                    // Write the string to the file "ArticlesViewed"
+                    FileOutputStream fos = new FileOutputStream(file);
+                    for(int i = 0; i < tempStr.length(); i++){
+                        fos.write(tempStr.charAt(i));
                     }
                 }
+
+
+                // Check each article ID in articles, and if it matches
+                // article_Data[j].get_ID(), then it has already been viewed
+                // Set article_Data[j].set_Viewed to true.
+                for(int i = 0; i < articles.size(); i++){
+                    for(int j = 0; j < article_Data.length; j++){
+                        if(Integer.toString(article_Data[j].get_ID()).equals(articles.get(i))){
+                            article_Data[j].set_Viewed(true);
+                        }
+                    }
+                }
+
             }
 
             // Catch exceptions
@@ -342,21 +350,25 @@ public class ArticleListActivity extends ActionBarActivity {
         // Only write title to file if this article has not already been viewed!
         if(!article_Data[position].get_Viewed()){
             // Save all of the viewed article titles to internal file "ArticlesViewed"
-            String FILENAME = "ArticlesViewed";
             // WRITE TO THE FILE
             try{
                 // Make a file output stream
                 /* To clear file:  change MODE_APPEND to MODE_PRIVATE,
                 *   run app and view one article, close app.  It's now cleared,
                 *   change back to MODE_APPEND */
-                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
-                // Write the article title to the file "ArticlesViewed"
-                for(int i = 0; i < Integer.toString(article_Data[position].get_ID()).length(); i++){
-                    fos.write(Integer.toString(article_Data[position].get_ID()).charAt(i));
+
+
+                File file = new File(getFilesDir()+File.separator+
+                        getResources().getString(R.string.article_file));
+                if (!file.exists()) {
+                    file.createNewFile();
                 }
-                // Delimit the IDs with @
-                fos.write("@".getBytes());
-                fos.close();
+                String write_String = String.valueOf(app_Articles.get(indices[position]).
+                        get_Article_ID()) + "@";
+                FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
+                BufferedWriter buffer_Writer = new BufferedWriter(file_Writer);
+                buffer_Writer.write(write_String);
+                buffer_Writer.close();
             }
             catch (IOException e){
                 // Catch the IOException
