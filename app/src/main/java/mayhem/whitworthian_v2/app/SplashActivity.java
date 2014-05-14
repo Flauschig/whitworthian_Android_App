@@ -280,7 +280,7 @@ public class SplashActivity extends ActionBarActivity {
                 if(articles_array.length > app_Articles.size() + spill_Over){
                     String tempStr = "";
                     // Copy as many articles as are in the article list
-                    for(int i = spill_Over; i < app_Articles.size() + spill_Over; i++){
+                    for(int i = spill_Over; i < articles_array.length; i++){
                         tempStr += articles_array[i];
                         tempStr += "@";
                         articles.add(articles_array[i]);
