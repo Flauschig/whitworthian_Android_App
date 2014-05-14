@@ -204,14 +204,12 @@ public class ArticleListActivity extends ActionBarActivity {
                 if (app_Articles.get(i).get_Genre().equals(my_Genre))
                 {   counter = set_List_Info(counter, i); }
             }
-            readFile(getResources().getString(R.string.article_file));
         }
         else {
             for (int i = 0; i < app_Articles.size(); i++) { //Top News
                 if (app_Articles.get(i).is_Top())
                 {   counter = set_List_Info(counter, i); }
             }
-            readFile(getResources().getString(R.string.article_file));
         }
         } catch(Exception bad) {
             Toast.makeText(getApplicationContext(),
@@ -220,78 +218,7 @@ public class ArticleListActivity extends ActionBarActivity {
         }
     }
 
-    private void readFile(String file_Name){
 
-        // If the article has previously been viewed, then set viewed
-        try {
-            // Set up the buffer for the input
-            byte[] buffer;
-            // Set up the file input stream
-            File file = new File(getFilesDir()+File.separator+file_Name);
-            if (file.exists()) {
-
-                FileInputStream fis = new FileInputStream(file);
-
-                int c;
-                String temp="";
-                while((c = fis.read()) != -1){
-                    temp = temp + Character.toString((char)c);
-                }
-                fis.close();
-
-                // Split the String on @, and feed the article IDs into a String List
-                String[] articles_array = temp.split("@");
-                List<String> articles = new ArrayList();
-                for(int i = 0; i < articles_array.length; i++){
-                    articles.add(articles_array[i]);
-                }
-
-                // If the number of articles is greater than 80, then delete the first half and overwrite the file
-                if(articles.size() > num_Articles * 2){
-                    String tempStr = "";
-                    // Copy the last 40 article titles into a temporary string
-                    for(int i = num_Articles; i < num_Articles * 2; i++){
-                        tempStr += articles_array[i];
-                        tempStr += "@";
-                    }
-
-                    // Get the new articles array with split(), give it to articles
-                    String[] temp_array = tempStr.split("@");
-                    articles.clear();
-                    for(int i = 0; i < temp_array.length; i++){
-                        articles.add(temp_array[i]);
-                    }
-
-                    // Overwrite "ArticlesViewed"
-                    // Write the string to the file "ArticlesViewed"
-                    FileOutputStream fos = new FileOutputStream(file);
-                    for(int i = 0; i < tempStr.length(); i++){
-                        fos.write(tempStr.charAt(i));
-                    }
-                }
-
-
-                // Check each article ID in articles, and if it matches
-                // article_Data[j].get_ID(), then it has already been viewed
-                // Set article_Data[j].set_Viewed to true.
-                for(int i = 0; i < articles.size(); i++){
-                    for(int j = 0; j < article_Data.length; j++){
-                        if(Integer.toString(article_Data[j].get_ID()).equals(articles.get(i))){
-                            article_Data[j].set_Viewed(true);
-                        }
-                    }
-                }
-
-            }
-
-            // Catch exceptions
-        } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), String.format("Creating file to save articles viewed...", e.toString()), Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
-        }
-
-    }
 
     /* Used to fill article_Data and get important indices of articles arrays */
     private int set_List_Info(int counter, int id) {

@@ -17,9 +17,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /** This is the SplashActivity.
  *  Includes the following functionality:
@@ -169,6 +179,7 @@ public class SplashActivity extends ActionBarActivity {
 
             try{
                 app_Articles = result;
+                read_File(getResources().getString(R.string.article_file));
                 Intent article_List = new Intent(SplashActivity.this, ArticleListActivity.class);
                 article_List.putExtra("this_Genre", "Top News");
                 article_List.putParcelableArrayListExtra("my_Articles", app_Articles);
@@ -235,6 +246,82 @@ public class SplashActivity extends ActionBarActivity {
         if (my_Progress_Text != null) {
             my_Progress_Text.setText(update);
         }
+    }
+
+    private void read_File(String file_Name){
+
+        //TODO: Add error code
+
+        // If the article has previously been viewed, then set viewed
+        try {
+            // Set up the buffer for the input
+            byte[] buffer;
+            // Set up the file input stream
+            File file = new File(getFilesDir()+File.separator+file_Name);
+            if (file.exists()) {
+
+                //FileInputStream fis = new FileInputStream(file);
+                FileReader file_Reader = new FileReader(getFilesDir()+File.separator+file.getName());
+                BufferedReader buffer_Reader = new BufferedReader(file_Reader);
+                String line = buffer_Reader.readLine();
+                /*temp="";
+                while((c = fis.read()) != -1){
+                    temp = temp + Character.toString((char)c);
+                }
+                fis.close(); */
+
+                // Split the String on @, and feed the article IDs into a String List
+                String[] articles_array = line.split("@");
+                List<String> articles = new ArrayList();
+                int spill_Over = 60;
+
+                // If there are over 60 more saved articles than the articles currently in the feed,
+                // delete the first half and overwrite the file
+                if(articles_array.length > app_Articles.size() + spill_Over){
+                    String tempStr = "";
+                    // Copy as many articles as are in the article list
+                    for(int i = spill_Over; i < app_Articles.size() + spill_Over; i++){
+                        tempStr += articles_array[i];
+                        tempStr += "@";
+                        articles.add(articles_array[i]);
+                    }
+
+                    // Overwrite "ArticlesViewed"
+                    // Write the string to the file "ArticlesViewed"
+                    file.delete();
+                    file.createNewFile();
+                    FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
+                    BufferedWriter buffer_Writer = new BufferedWriter(file_Writer);
+                    buffer_Writer.write(tempStr);
+                    buffer_Writer.close();
+                } else {
+                    for(int i = 0; i < articles_array.length; i++){
+                        articles.add(articles_array[i]);
+                    }
+                }
+
+
+                // Check each article ID in articles, and if it matches
+                // article_Data[j].get_ID(), then it has already been viewed
+                // Set article_Data[j].set_Viewed to true.
+                for(int i = 0; i < articles.size(); i++){
+                    for(int j = 0; j < app_Articles.size(); j++){
+                        if(Integer.toString(app_Articles.get(j).get_Article_ID()).
+                                equals(articles.get(i))){
+                            app_Articles.get(j).set_Viewed(true);
+                        }
+                    }
+                }
+
+            }
+
+            // Catch exceptions
+        } catch (FileNotFoundException e) {
+            Toast.makeText(getApplicationContext(), String.format("Creating file to save articles viewed...", e.toString()), Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
+        }
+
     }
 
     /**
