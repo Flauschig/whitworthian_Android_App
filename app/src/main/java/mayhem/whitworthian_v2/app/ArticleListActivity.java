@@ -259,7 +259,7 @@ public class ArticleListActivity extends ActionBarActivity {
                 // Overwrite "ArticlesViewed"
                 String FILENAME = "ArticlesViewed";
                 // Write the string to the file "ArticlesViewed"
-                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_APPEND);
                 for(int i = 0; i < tempStr.length(); i++){
                     fos.write(tempStr.charAt(i));
                 }
@@ -278,7 +278,7 @@ public class ArticleListActivity extends ActionBarActivity {
 
             // Catch exceptions
         } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), String.format("Creating file to save articles viewed...", e.toString()), Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
         }
