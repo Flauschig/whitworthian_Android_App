@@ -14,6 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /** This is the SearchResultsActivity.
@@ -219,6 +223,34 @@ public class SearchResultsActivity extends ActionBarActivity {
     /* On Click, loads the appropriate article */
     public void load_Article_View(int position) {
         try{
+            if(!article_Data[position].get_Viewed()){
+                // Save all of the viewed article titles to internal file "ArticlesViewed"
+                // WRITE TO THE FILE
+                try{
+                    // Make a file output stream
+                /* To clear file:  change MODE_APPEND to MODE_PRIVATE,
+                *   run app and view one article, close app.  It's now cleared,
+                *   change back to MODE_APPEND */
+
+
+                    File file = new File(getFilesDir()+File.separator+
+                            getResources().getString(R.string.article_file));
+                    if (!file.exists()) {
+                        file.createNewFile();
+                    }
+                    String write_String = String.valueOf(app_Articles.get(indices[position]).
+                            get_Article_ID()) + "@";
+                    FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
+                    BufferedWriter buffer_Writer = new BufferedWriter(file_Writer);
+                    buffer_Writer.write(write_String);
+                    buffer_Writer.close();
+                }
+                catch (IOException e){
+                    // Catch the IOException
+                    Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
+                }
+            }
+
             app_Articles.get(indices[position]).set_Viewed(true);
             article_Data[position].set_Viewed(true);
             Intent article_View = new Intent(this, ArticleViewActivity.class);
