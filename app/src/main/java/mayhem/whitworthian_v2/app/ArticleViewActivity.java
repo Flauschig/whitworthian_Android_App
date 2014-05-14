@@ -79,6 +79,7 @@ public class ArticleViewActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                return true;
             case R.id.action_font_size:
                 android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
                 FontSizeDialogFragment dialog = new FontSizeDialogFragment();
