@@ -19,6 +19,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
 /** This is the ArticleViewActivity.
  *  Includes the following functionality:
  *  -Receives a single article under-the-hood
@@ -43,6 +50,7 @@ public class ArticleViewActivity extends ActionBarActivity {
     private String my_Title;
     private String my_Body;
     private View fragment_View;
+    public static int font_size = 100;
     //private Spanned my_Body;
 
     /* Create activity and fragment, Sets up local data */
@@ -178,8 +186,6 @@ public class ArticleViewActivity extends ActionBarActivity {
             my_Genre = getResources().getString(R.string.top);
         }
     }
-
-    public static int font_size = 100;
     /**
      * A dialog fragment that will allow the user to choose a font size
      */
@@ -202,24 +208,103 @@ public class ArticleViewActivity extends ActionBarActivity {
                             switch(which){
                                 case 0: // Small
                                     font_size = 100;
+                                    save_Font_Setting();
                                     set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                                 case 1: // Medium
                                     font_size = 150;
+                                    save_Font_Setting();
                                     set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                                 case 2: // Large
                                     font_size = 200;
+                                    save_Font_Setting();
                                     set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                                 default:// Default is small
                                     font_size = 100;
+                                    save_Font_Setting();
                                     set_Webview_Body(fragment_View, mimeType, encoding);
                                     break;
                             }
                         }
                     });
             return builder.create();
+        }
+    }
+
+    /* Saves font size setting to file */
+    public void save_Font_Setting() {
+        File file = new File(getFilesDir()+File.separator+
+                getResources().getString(R.string.preferences_file));
+        try {
+            if (file.exists()) {
+                FileReader file_Reader = new FileReader(getFilesDir()+File.separator+file.getName());
+                BufferedReader buffer_Reader = new BufferedReader(file_Reader);
+                String line = buffer_Reader.readLine();
+                String preferences[] = line.split("@");
+                line = "";
+                for (String pref: preferences) {
+                    if (pref.contains(getResources().getString(R.string.fontsize_preference))) {
+                        line += getResources().getString(R.string.fontsize_preference) + "=" +
+                                Integer.toString(font_size) + "@";
+
+                    } else{
+                        line += pref + "@";
+                    }
+                }
+
+                //Empty File
+                PrintWriter writer = new PrintWriter(file);
+                writer.print("");
+                writer.close();
+                FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
+                BufferedWriter buffer_Writer = new BufferedWriter(file_Writer);
+                buffer_Writer.write(line);
+                buffer_Writer.close();
+
+                //Rewrite preferences
+            } else {
+                file.createNewFile();
+                String preference_String = getResources().getString(R.string.fontsize_preference) +
+                        "=" + Integer.toString(font_size) +  "@"; //String delimiter
+                FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
+                BufferedWriter buffer_Writer = new BufferedWriter(file_Writer);
+                buffer_Writer.write(preference_String);
+                buffer_Writer.close();
+            }
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0043"),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /* Reads font size setting from file */
+    public void read_Font_Setting() {
+        File file = new File(getFilesDir()+File.separator+
+                getResources().getString(R.string.preferences_file));
+        try {
+            if (file.exists()) {
+                FileReader file_Reader = new FileReader(getFilesDir()+File.separator+file.getName());
+                BufferedReader buffer_Reader = new BufferedReader(file_Reader);
+                String line = buffer_Reader.readLine();
+                String preferences[] = line.split("@");
+                line = "";
+                for (String pref: preferences) {
+                    if (pref.contains(getResources().getString(R.string.fontsize_preference))) {
+                        font_size = Integer.parseInt(pref.substring(pref.lastIndexOf("=")+1));
+                    }
+                }
+            } else {
+                font_size = 100;
+                return;
+            }
+        } catch(Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0044"),
+                    Toast.LENGTH_LONG).show();
+            font_size = 100;
         }
     }
 
@@ -273,6 +358,7 @@ public class ArticleViewActivity extends ActionBarActivity {
             TextView title_Text = null;
             final String mimeType = "text/html";
             final String encoding = "UTF-8";
+            read_Font_Setting();
 
             //Set the image, if it exists
             try {

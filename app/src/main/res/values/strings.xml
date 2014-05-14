@@ -35,6 +35,8 @@
     <string name="sports_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/Sports.jpg</string>
     <string name="clicked_grey">#80A8A8A8</string>
     <string name="article_file">ArticlesViewed.txt</string>
+    <string name="preferences_file">Preferences.txt</string>
+    <string name="fontsize_preference">Preference:FONTSIZE</string>
 
     <string-array name="news_Genres">
         <item>Top News</item>

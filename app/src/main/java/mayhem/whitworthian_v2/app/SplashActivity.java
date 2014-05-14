@@ -259,16 +259,9 @@ public class SplashActivity extends ActionBarActivity {
             // Set up the file input stream
             File file = new File(getFilesDir()+File.separator+file_Name);
             if (file.exists()) {
-
-                //FileInputStream fis = new FileInputStream(file);
                 FileReader file_Reader = new FileReader(getFilesDir()+File.separator+file.getName());
                 BufferedReader buffer_Reader = new BufferedReader(file_Reader);
                 String line = buffer_Reader.readLine();
-                /*temp="";
-                while((c = fis.read()) != -1){
-                    temp = temp + Character.toString((char)c);
-                }
-                fis.close(); */
 
                 // Split the String on @, and feed the article IDs into a String List
                 String[] articles_array = line.split("@");
