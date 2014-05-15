@@ -20,12 +20,8 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -299,6 +295,7 @@ public class SplashActivity extends ActionBarActivity {
                 FileReader file_Reader = new FileReader(getFilesDir()+File.separator+file.getName());
                 BufferedReader buffer_Reader = new BufferedReader(file_Reader);
                 String line = buffer_Reader.readLine();
+                buffer_Reader.close();
 
                 // Initialize variables, then Split the IDs apart on @
                 int spill_Over = 60;
