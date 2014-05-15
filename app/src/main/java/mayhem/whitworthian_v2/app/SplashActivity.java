@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,14 @@ public class SplashActivity extends ActionBarActivity {
     private boolean locked;
 
 
-    /* Creates the layout, fills the urls array, and fetches all data from thewhitworthian.com */
+    /** OVERRIDEN ACTIVITY FUNCTIONS
+     * onCreate()
+     * onCreateOptionsMenu()
+     * onOptionsItemSelected()
+     */
+
+    /* Creates the layout, fills the urls array, and creates a Placeholder Fragment, which
+       fetches data from thewhitworthian.com */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,15 +79,50 @@ public class SplashActivity extends ActionBarActivity {
         fill_URLs(); // fill url array
     }
 
-    /* Inflates options menu without functionality */
+    /* Inflates options menu with refresh button */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu so that users can refresh if no internet connection.
         getMenuInflater().inflate(R.menu.splash, menu);
         return true;
     }
 
-    /*Fills the URL string with all appropriate feeds */
+    /*Handles refresh click */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        switch(item.getItemId()){
+            case R.id.action_settings:
+                return true;
+            case R.id.action_refresh:
+                try {
+                    if (!(locked)) {
+                        locked = true;
+                        my_Progress_Bar.setVisibility(View.VISIBLE);
+                        update_Progress(getResources().getString(R.string.load_text));
+                        new FetchArticlesTask().execute(this.urls);
+                    }
+                    return true;
+                } catch(Exception bad) {
+                    Toast.makeText(getApplicationContext(),
+                            String.format("A non-fatal error occured! \nCode: 6d617968656d-0041"),
+                            Toast.LENGTH_LONG).show();
+                    return super.onOptionsItemSelected(item);
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+
+    /** VARIABLE/VIEW INITIALIZATION FUNCTIONS
+     * fill_URLs() function to get url strings
+     * init_Progress_Bar() function to find progress wheel/text in view
+     */
+
+    /*Fills the URL array with the URLs of the feeds from strings.xml's "news_urls" array*/
     private void fill_URLs() {
         try{
             String[] url_String = getResources().getStringArray(R.array.news_urls);
@@ -94,37 +137,80 @@ public class SplashActivity extends ActionBarActivity {
         }
     }
 
+    /*Initialize the progress bar & text */
+    public void init_Progress_Bar(View view) {
+        try{
+            my_Progress_Bar = (ProgressBar) view.findViewById(R.id.news_Load_Bar);
+            my_Progress_Text = (TextView) view.findViewById(R.id.progress_Text);
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occured! \nCode: 6d617968656d-0042"),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+    /** PROGRESS UPDATE FUNCTIONS
+     * hide_Progress() function to hide progress bar
+     * update_Progress() function to change progress text
+     */
+
+    /*Hide progress bar */
+    public void hide_Progress() {
+        my_Progress_Bar.setVisibility(View.INVISIBLE);
+    }
+
+    /*Update text in progress TextView */
+    public void update_Progress(String update){
+        if (my_Progress_Text != null) {
+            my_Progress_Text.setText(update);
+        }
+    }
+
+
+    /** DATA GATHERING:
+     *  FetchArticlesTask class for getting data from thewhitworthian.com
+     *  read_File() function for figuring out which articles are viewed
+     */
+
     /*Opens up a background AsyncTask which fetches all of the data from the website */
     private class FetchArticlesTask extends AsyncTask<URL, Integer, ArrayList<Article>> {
         /*doInBackground is where the action happens, connection is made here, and data is
-         * collected.
-         */
-        //TODO: Fix crash on loss of internet connectivity.
-        //TODO: Try to make the data collection and storing cleaner/more efficient
+         * collected. */
+        //TODO: Fix crash on loss of internet connectivity DURING load.
         @Override
         protected ArrayList<Article> doInBackground(URL... urls) {
+            // Set up an RssHandler class, which will parse the feed.
             RssHandler new_Parser = new RssHandler(getApplicationContext());
-            ArrayList<Article> arrays[] = new ArrayList[NUM_GENRES];
-            for (int i = 0; i < NUM_GENRES; i++) { // loop through all feeds
+
+            //Loop through all feed URLs
+            for (int i = 0; i < NUM_GENRES; i++) {
                 try {
+                    //If there's a network connection
                     if (is_Network_Connected()) {
-                        //Setup for connection
+                        //Connect to the RSS stream and get the data
                         InputStream input = urls[i].openStream();
                         new_Parser.parse(input);
                         new_Parser.getArticleList(); //store the data.
                         publishProgress(new Integer[]{i+1});
+
+                        //Mark top news articles as top news
                         if (i == 0) {
                             new_Parser.mark_Top();
                         }
                     } else {
+                        //If there's not a connection, return null ->
+                        // informs user in later function
                         return null;
                     }
                 } catch (Exception bad) {
                     Toast.makeText(getApplicationContext(),
                             String.format("Failed to retrieve articles! \nCode: 6d617968656d-0038"),
                             Toast.LENGTH_LONG).show();
+                    return null;
                 }
             }
+            //Display progress to the user
             publishProgress(new Integer[]{NUM_GENRES+1});
 
             return new_Parser.getArticleList();
@@ -132,13 +218,12 @@ public class SplashActivity extends ActionBarActivity {
 
         /*Check to see if connected to a network*/
         private boolean is_Network_Connected() {
-            final ConnectivityManager conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            final ConnectivityManager conMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
             final NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
-            return activeNetwork != null && activeNetwork.getState() == NetworkInfo.State.CONNECTED;
+            return activeNetwork != null &&
+                    activeNetwork.getState() == NetworkInfo.State.CONNECTED;
         }
-
-
-
 
         /* Updates load text on splash page */
         @Override
@@ -159,11 +244,13 @@ public class SplashActivity extends ActionBarActivity {
             }
         }
 
-        /* After articles are gathered, this opens up the Top News article list*/
+        /* After articles are gathered, this opens up the Top News article list
+        *  If articles weren't gathered, this exits and lets user refresh */
         @Override
         protected void onPostExecute(ArrayList<Article> result) {
             super.onPostExecute(result);
 
+            //If the connection failed, tell the user & unlock load threads
             if(result==null) {
                 runOnUiThread(new Runnable() {
 
@@ -189,114 +276,67 @@ public class SplashActivity extends ActionBarActivity {
                 // close this activity
                 finish();
             } catch(Exception bad) {
+                //In case something went wrong, unlock refresh button
                 Toast.makeText(getApplicationContext(),
                         String.format("A non-fatal error occured! \nCode: 6d617968656d-0040"),
                         Toast.LENGTH_LONG).show();
+                locked = false;
             }
         }
     }
 
-    /*Handles item menu click */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch(item.getItemId()){
-            case R.id.action_settings:
-                return true;
-            case R.id.action_refresh:
-                try {
-                    if (!(locked)) {
-                        locked = true;
-                        my_Progress_Bar.setVisibility(View.VISIBLE);
-                        update_Progress(getResources().getString(R.string.load_text));
-                        new FetchArticlesTask().execute(this.urls);
-                    }
-                    return true;
-                } catch(Exception bad) {
-                    Toast.makeText(getApplicationContext(),
-                            String.format("A non-fatal error occured! \nCode: 6d617968656d-0041"),
-                            Toast.LENGTH_LONG).show();
-                }
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /*Initialize the progress bar & text */
-    public void init_Progress_Bar(View view) {
-        try{
-            my_Progress_Bar = (ProgressBar) view.findViewById(R.id.news_Load_Bar);
-            my_Progress_Text = (TextView) view.findViewById(R.id.progress_Text);
-        } catch (Exception bad) {
-            Toast.makeText(getApplicationContext(),
-                    String.format("A non-fatal error occured! \nCode: 6d617968656d-0042"),
-                    Toast.LENGTH_LONG).show();
-        }
-    }
-
-    /*Hide progress bar */
-    public void hide_Progress() {
-        my_Progress_Bar.setVisibility(View.INVISIBLE);
-    }
-
-    /*Update text in progress textview */
-    public void update_Progress(String update){
-        if (my_Progress_Text != null) {
-            my_Progress_Text.setText(update);
-        }
-    }
-
+    /* Figures out, from file, which articles have been viewed and marks those articles as viewed.
+       If the file gets too big, read_File() trims it down, only keeping the most recent articles
+       in memory. */
     private void read_File(String file_Name){
-
-        //TODO: Add error code
-
-        // If the article has previously been viewed, then set viewed
         try {
-            // Set up the buffer for the input
-            byte[] buffer;
-            // Set up the file input stream
+            // Grab the article view file
             File file = new File(getFilesDir()+File.separator+file_Name);
+
+            //If that file exists, then...
             if (file.exists()) {
+                //Read in all the data in the file
                 FileReader file_Reader = new FileReader(getFilesDir()+File.separator+file.getName());
                 BufferedReader buffer_Reader = new BufferedReader(file_Reader);
                 String line = buffer_Reader.readLine();
 
-                // Split the String on @, and feed the article IDs into a String List
-                String[] articles_array = line.split("@");
-                List<String> articles = new ArrayList();
+                // Initialize variables, then Split the IDs apart on @
                 int spill_Over = 60;
+                List<String> articles = new ArrayList();
+                String[] articles_array = line.split("@");
+
 
                 // If there are over 60 more saved articles than the articles currently in the feed,
-                // delete the first half and overwrite the file
+                // delete the 60.
                 if(articles_array.length > app_Articles.size() + spill_Over){
                     String tempStr = "";
-                    // Copy as many articles as are in the article list
+                    // Copy ID# 61+, and create a string that will rewrite them to file
                     for(int i = spill_Over; i < articles_array.length; i++){
                         tempStr += articles_array[i];
                         tempStr += "@";
                         articles.add(articles_array[i]);
                     }
 
-                    // Overwrite "ArticlesViewed"
-                    // Write the string to the file "ArticlesViewed"
-                    file.delete();
-                    file.createNewFile();
-                    FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
+                    // Flush "ArticlesViewed.txt"
+                    PrintWriter writer = new PrintWriter(file);
+                    writer.print("");
+                    writer.close();
+
+                    // Rewrite trimmed IDs to file.
+                    FileWriter file_Writer = new FileWriter(getFilesDir()+
+                            File.separator+file.getName(), true);
                     BufferedWriter buffer_Writer = new BufferedWriter(file_Writer);
                     buffer_Writer.write(tempStr);
                     buffer_Writer.close();
                 } else {
+                    //If there aren't too many IDs in the file, don't worry about cleaning
                     for(int i = 0; i < articles_array.length; i++){
                         articles.add(articles_array[i]);
                     }
                 }
 
-
-                // Check each article ID in articles, and if it matches
-                // article_Data[j].get_ID(), then it has already been viewed
-                // Set article_Data[j].set_Viewed to true.
+                // Check each article ID from the file.  If it matches
+                // any article in app_Articles, then set that matching article as viewed
                 for(int i = 0; i < articles.size(); i++){
                     for(int j = 0; j < app_Articles.size(); j++){
                         if(Integer.toString(app_Articles.get(j).get_Article_ID()).
@@ -307,24 +347,25 @@ public class SplashActivity extends ActionBarActivity {
                 }
 
             }
-
-            // Catch exceptions
-        } catch (FileNotFoundException e) {
-            Toast.makeText(getApplicationContext(), String.format("Creating file to save articles viewed...", e.toString()), Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
+        // Catch exceptions, print out error code
+        } catch (Exception bad) {
+            Toast.makeText(getApplicationContext(),
+                    String.format("A non-fatal error occurred! \nCode: 6d617968656d-0045"),
+                    Toast.LENGTH_LONG).show();
         }
 
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
+
+
+    /** PLACEHOLDERFRAGMENT:
+     *  This is the fragment which the user sees when SplashActivity is active.
      */
     public class PlaceholderFragment extends Fragment {
 
-        public PlaceholderFragment() {
-        }
+        public PlaceholderFragment() {}
 
+        /*Creates the view and fetches articles*/
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
