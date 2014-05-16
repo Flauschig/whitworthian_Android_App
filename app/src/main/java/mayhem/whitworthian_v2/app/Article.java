@@ -13,10 +13,13 @@ import java.util.ArrayList;
  *  desc:               the description of the article
  *  genre:              the genre of the article
  *  is_Top:             a boolean determining whether or not the article is Top News
- *  has_Image:          a boolean determining whether or not the article has an image link
  *  viewed:             a boolean determining whether or not the user has viewed the article
+ *  has_Image:          a boolean determining whether or not the article has an image link
+ *  has_Thumb:          a boolean determining whether or not the article has a thumbnail link
  *  image_ID:           default image ID based on genre
  *  image_URL:          if has_Image is true, the URL of this article's image.
+ *  thumb_URL:          if has_Thumb is true, the URL of this article's thumbnail.
+ *  categories:         RSS Feed categories, used for search.
  */
 public class Article implements Parcelable {
     private int article_ID;
@@ -34,14 +37,11 @@ public class Article implements Parcelable {
     private String[] categories;
 
 
-
     /*Part of Parcelable interface.
         If article ever has child classes, this is used to distinguish which type of article
          the parcel is.
      */
-    public int describeContents() {
-        return 0;
-    }
+    public int describeContents() {return 0;}
 
     /*Part of Parcelable interface.
         When parcelled, the program stores the article's information in this order.  It must
@@ -191,6 +191,7 @@ public class Article implements Parcelable {
     }
     public void set_Categories(ArrayList<String> cats)
     {
+        //sets category strings using an ArrayList of categories.
         if (cats.size() > 0) {
             categories = new String[cats.size()];
         } else {

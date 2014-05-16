@@ -16,7 +16,7 @@
                 android:src="@drawable/news_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="tempImage" />
+                android:contentDescription="@string/article_Banner_String"/>
             </RelativeLayout>
 
         <WebView
@@ -45,7 +45,6 @@
 
         <WebView
             android:id="@+id/article_content"
-            android:text="@string/test_Content"
             android:textSize="20sp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"

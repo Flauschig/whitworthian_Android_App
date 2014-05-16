@@ -12,7 +12,7 @@
         android:gravity="top"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:contentDescription="article_img"
+        android:contentDescription="@string/article_Thumb_String"
         android:layout_marginTop="3dp"/>
 
     <WebView

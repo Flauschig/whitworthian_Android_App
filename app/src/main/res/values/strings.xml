@@ -1,24 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- General application resources -->
     <string name="app_name">The Whitworthian</string>
+    <string name="title_activity_article_list">ArticleListActivity</string>
+    <string name="title_activity_article_view">ArticleViewActivity</string>
+    <string name="title_activity_genre_list">GenreListActivity</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="title_activity_search_results">SearchResultsActivity</string>
+
+    <!-- Color Hex Codes -->
+    <string name="whitworthian_red">#CD212F</string>
+    <string name="clicked_grey">#80A8A8A8</string>
+
+    <!-- Strings for layout resources -->
     <string name="masthead_Image_String">WhitworthianMasthead</string>
-    <string name="title_Activity_Article_List">ArticleListActivity</string>
-    <string name="back_Button_String">&lt;</string>
+    <string name="article_Thumb_String">article_thumb</string>
+    <string name="article_Banner_String">article_banner</string>
     <string name="header_String">The Whitworthian</string>
-    <string name="title_Activity_Genre_List">GenreListActivity</string>
-    <string name="genres">Genres</string>
-    <string name="search_label">mayhem.whitworthian_v2.app.SearchActivity</string>
-    <string name="search_hint">Search Articles…</string>
+    <string name="no_search">No Search Results.</string>
+    <string name="test_Title">Titles, Titles, Titles…</string>
+
+    <!-- Resources for action bar actions -->
     <string name="action_search">Search</string>
-    <string name="sports">Sports</string>
-    <string name="arts_culture">Arts &amp; Culture</string>
-    <string name="news">News</string>
-    <string name="opinions">Opinions</string>
-    <string name="top">Top News</string>
-    <string name="exit">Exit</string>
-    <string name="retry">Try Again</string>
     <string name="action_refresh">Refresh</string>
+    <string name="search_hint">Search Articles…</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_font_size">Font Size</string>
+
+    <!-- SplashActivity Loading strings -->
     <string name="load_text">Loading…</string>
     <string name="get_top">Getting Top News</string>
     <string name="get_news">Getting News</string>
@@ -27,25 +37,12 @@
     <string name="get_opinion">Getting Opinions</string>
     <string name="cleaning_data">Cleaning Data</string>
     <string name="connection_fail">Connection Failed</string>
-    <string name="whitworthian_red">#CD212F</string>
-    <string name="no_search">No Search Results.</string>
-    <string name="ac_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/AC.jpg</string>
-    <string name="news_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/News.jpg</string>
-    <string name="opinions_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/04/Opinions.png</string>
-    <string name="sports_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/Sports.jpg</string>
-    <string name="clicked_grey">#80A8A8A8</string>
-    <string name="article_file">ArticlesViewed.txt</string>
-    <string name="preferences_file">Preferences.txt</string>
-    <string name="fontsize_preference">Preference:FONTSIZE</string>
 
-    <string-array name="news_Genres">
-        <item>Top News</item>
-        <item>News</item>
-        <item>Sports</item>
-        <item>Arts &amp; Culture</item>
-        <item>Opinions</item>
-    </string-array>
+    <!-- SplashActivity Error message resources -->
+    <string name="exit">Exit</string>
+    <string name="retry">Try Again</string>
 
+    <!-- URLS of RSS feeds -->
     <string-array name="news_urls">
         <item>http://www.thewhitworthian.com/feed/</item>
         <item>http://www.thewhitworthian.com/category/news/feed/</item>
@@ -54,19 +51,34 @@
         <item>http://www.thewhitworthian.com/category/arts-and-culture/feed/</item>
     </string-array>
 
-    <string name="title_Activity_Article_View">ArticleViewActivity</string>
-    <string name="test_Title">Titles, Titles, Titles…</string>
-    <string name="test_Content">This should be an article body.  You shouldn\'t see this</string>
+    <!-- URLS of default genre images -->
+    <string name="ac_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/AC.jpg</string>
+    <string name="news_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/News.jpg</string>
+    <string name="opinions_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/04/Opinions.png</string>
+    <string name="sports_img_url">http://www.thewhitworthian.com/wp-content/uploads/2014/02/Sports.jpg</string>
 
-    <string name="title_activity_article_list">ArticleListActivity</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_article_view">ArticleViewActivity</string>
-    <string name="title_activity_genre_list">GenreListActivity</string>
-    <string name="title_activity_search">SearchActivity</string>
-    <string name="title_activity_search_results">SearchResultsActivity</string>
+    <!-- Names of Data files -->
+    <string name="article_file">ArticlesViewed.txt</string>
+    <string name="preferences_file">Preferences.txt</string>
 
-    <string name="action_font_size">Font Size</string>
+    <!-- Names of Preferences -->
+    <string name="fontsize_preference">Preference:FONTSIZE</string>
+
+    <!-- Genre names in array and non-array format -->
+    <string name="sports">Sports</string>
+    <string name="arts_culture">Arts &amp; Culture</string>
+    <string name="news">News</string>
+    <string name="opinions">Opinions</string>
+    <string name="top">Top News</string>
+    <string-array name="news_Genres">
+        <item>Top News</item>
+        <item>News</item>
+        <item>Sports</item>
+        <item>Arts &amp; Culture</item>
+        <item>Opinions</item>
+    </string-array>
+
+    <!-- Resources for font size change operation -->
     <string name="pick_font">Pick a font size</string>
     <string-array name="font_sizes">
         <item>Small</item>

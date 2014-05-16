@@ -37,7 +37,6 @@ import java.util.ArrayList;
  *      no_Search           A TextView which informs the user if there are no search results
  */
 public class SearchResultsActivity extends ActionBarActivity {
-    /** Variable Declarations */
     private ArrayList<Article> app_Articles;
     private ArrayList<Article> search_Articles;
     private ArticleSelection[] article_Data;
@@ -46,14 +45,18 @@ public class SearchResultsActivity extends ActionBarActivity {
     private ListView search_List;
     private TextView no_Search;
 
-    /** Initialization Methods */
+    /** OVERRIDEN ACTIVITY FUNCTIONS
+     * onCreate()
+     * onOptionsItemSelected()
+     */
+
+    /* Sets up view and enables back button */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
-
-
         search_Articles = new ArrayList<Article>();
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment(getIntent())).commit();
@@ -71,12 +74,46 @@ public class SearchResultsActivity extends ActionBarActivity {
 
     }
 
-    /* Handles the Intent of the data by:
-         * Searches
-         * Tailors data to ListView
-         * Displays data in ListView */
-    private void handleIntent(Intent intent) {
+    /*Handles back button presses */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                try{
+                    // when the back button is clicked, return to the genre list
+                    Intent data = new Intent();
+                    data.putParcelableArrayListExtra("my_Articles", app_Articles);
+                    setResult(RESULT_OK, data);
+                    finish();
+                } catch(Exception bad) {
+                    Toast.makeText(getApplicationContext(),
+                            String.format("A non-fatal error occurred! \nCode: 6d617968656d-0035"),
+                            Toast.LENGTH_LONG).show();
+                    setResult(RESULT_CANCELED);
+                    finish();
+                }
+                return true;
+            case mayhem.whitworthian_v2.app.R.id.action_settings:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /** SEARCH HANDLING METHOD
+     * handle_Intent() function: overarching search handling function
+     * fits_Search() function: Checks to see if the article fits the query
+     * fill_Data() function: Fill the data which fits the search results into variables for
+     *                        list adaptation.
+     * no_Results() function: If there are no search results, tailors display accordingly.
+     */
+
+    /* Handles the Intent of the data by searching, tailoring the data to ListView, and
+       displaying the data in the ListView */
+    private void handle_Intent(Intent intent) {
         String query = null;
+
+        //get the search query from intent
         try{
             query = intent.getStringExtra(SearchManager.QUERY);
             app_Articles = intent.getParcelableArrayListExtra("my_Articles");
@@ -88,8 +125,10 @@ public class SearchResultsActivity extends ActionBarActivity {
             return;
         }
 
-        //Fill in local data
+        //Fill action bar title
         setTitle("Search for: " + query);
+
+        //Sort out the articles that fit the search
         for (int i = 0; i < app_Articles.size(); i++) {
             if (fits_Search(app_Articles.get(i), query)) {
                 search_Articles.add(app_Articles.get(i));
@@ -101,7 +140,7 @@ public class SearchResultsActivity extends ActionBarActivity {
             return;
         }
 
-        //Tailors data to put it into list format
+        //Tailors data for list formatting.
         try {
             article_Data = new ArticleSelection[search_Articles.size()];
             indices = new int[search_Articles.size()];
@@ -122,7 +161,7 @@ public class SearchResultsActivity extends ActionBarActivity {
                     Toast.LENGTH_LONG).show();
         }
 
-        //Puts data into list
+        //Adapts formatted data to the list.
         try {
             adapter = new ArticleSelectionAdapter(this, article_Data);
             search_List.setAdapter(adapter);
@@ -193,51 +232,28 @@ public class SearchResultsActivity extends ActionBarActivity {
     }
 
 
-    /** User Input Methods */
-    /*Handles user input of top action bar */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                try{
-                    // when the back button is clicked, return to the genre list
-                    Intent data = new Intent();
-                    data.putParcelableArrayListExtra("my_Articles", app_Articles);
-                    setResult(RESULT_OK, data);
-                    finish();
-                } catch(Exception bad) {
-                    Toast.makeText(getApplicationContext(),
-                            String.format("A non-fatal error occurred! \nCode: 6d617968656d-0035"),
-                            Toast.LENGTH_LONG).show();
-                    setResult(RESULT_CANCELED);
-                    finish();
-                }
-                return true;
-            case mayhem.whitworthian_v2.app.R.id.action_settings:
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+    /** HANDLE USER INPUT
+     * load_Article_View() function: loads ArticleViewActivity of selected article
+     * refresh_View() function: refreshes the local list when an item is clicked to show
+     *                            it as viewed.
+     */
 
-    /* On Click, loads the appropriate article */
+    /* On Click, loads the appropriate article & saves view status to file if necessary*/
     public void load_Article_View(int position) {
         try{
             if(!article_Data[position].get_Viewed()){
-                // Save all of the viewed article titles to internal file "ArticlesViewed"
-                // WRITE TO THE FILE
+                // If it hasn't been viewed, save this file to the data file.
                 try{
-                    // Make a file output stream
-                /* To clear file:  change MODE_APPEND to MODE_PRIVATE,
-                *   run app and view one article, close app.  It's now cleared,
-                *   change back to MODE_APPEND */
-
-
+                    //Make a file object for the appropriate file
                     File file = new File(getFilesDir()+File.separator+
                             getResources().getString(R.string.article_file));
+
+                    //Make the file if it doesn't exist
                     if (!file.exists()) {
                         file.createNewFile();
                     }
+
+                    //Write out this ID, delimted with "@"
                     String write_String = String.valueOf(app_Articles.get(indices[position]).
                             get_Article_ID()) + "@";
                     FileWriter file_Writer = new FileWriter(getFilesDir()+File.separator+file.getName(), true);
@@ -246,11 +262,11 @@ public class SearchResultsActivity extends ActionBarActivity {
                     buffer_Writer.close();
                 }
                 catch (IOException e){
-                    // Catch the IOException
                     Toast.makeText(getApplicationContext(), String.format("Error! %s", e.toString()), Toast.LENGTH_LONG).show();
                 }
             }
 
+            //Open up an ArticleviewActivity
             app_Articles.get(indices[position]).set_Viewed(true);
             article_Data[position].set_Viewed(true);
             Intent article_View = new Intent(this, ArticleViewActivity.class);
@@ -275,8 +291,9 @@ public class SearchResultsActivity extends ActionBarActivity {
     }
 
 
-    /** Fragment View for SearchResultsActivity.  This is the actual view on which the application
-     * focuses while a SearchResultsActivity is active.     */
+    /** PLACEHOLDERFRAGMENT.
+     *  This is the actual view on which the application focuses while a SearchResultsActivity
+     *  is active.     */
     public class PlaceholderFragment extends Fragment {
         private Intent thisIntent;
 
@@ -307,7 +324,7 @@ public class SearchResultsActivity extends ActionBarActivity {
 
 
             //Handles the intent, searches through data, sets up list
-            handleIntent(thisIntent);
+            handle_Intent(thisIntent);
 
 
             //Sets up an event handler which waits for an article to be clicked on,

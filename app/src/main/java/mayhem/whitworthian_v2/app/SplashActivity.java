@@ -189,6 +189,7 @@ public class SplashActivity extends ActionBarActivity {
                         new_Parser.parse(input);
                         new_Parser.getArticleList(); //store the data.
                         publishProgress(new Integer[]{i+1});
+                        input.close();
 
                         //Mark top news articles as top news
                         if (i == 0) {

@@ -19,7 +19,16 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * This class handles the RSS feed, and sorts its data.  Contains the following:
+ * This class handles the RSS feed, and sorts its data.
+ *
+ * Contains the following:
+ *
+ * my_Articles:         An arraylist of all articles fetched from RSS feed
+ * ids:                 An arraylist of the ids of all fetched articles
+ * current_Article:     Temporary data for the article being fetched.
+ * ctxt:                The application context, used for accessing strings.xml resources
+ * categories:          An arraylist of strings of RSS feed categories for the current article.
+ * badID:               Used in the case of an article's ID being a duplicate
  */
 public class RssHandler {
     private ArrayList<Article> my_Articles;
@@ -29,6 +38,7 @@ public class RssHandler {
     private ArrayList<String> categories;
     private int badID = -1337;
 
+    /* Constructor */
     public RssHandler(Context ctxt) {
         my_Articles = new ArrayList<Article>();
         ids = new ArrayList<Integer>();
@@ -36,6 +46,7 @@ public class RssHandler {
     }
 
 
+    /* Parses data from the RSS feed */
     public void parse(InputStream is) throws IOException, SAXException {
         RootElement rss = new RootElement("rss");
         Element channel = rss.requireChild("channel");
@@ -49,16 +60,19 @@ public class RssHandler {
                 categories = new ArrayList<String>();
             }
         });
+        //Retrieves the title
         item.getChild("title").setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
                 current_Article.set_Article_Title(body);
             }
         });
+        //Retrieves the description
         item.getChild("description").setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
                 current_Article.set_Article_Desc(body);
             }
         });
+        //Retrieves the ID
         item.getChild("guid").setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
                 if (body.contains(".com/?p=")) {
@@ -74,6 +88,7 @@ public class RssHandler {
                 }
             }
         });
+        //Retrieves categories/genre
         item.getChild("category").setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
                 categories.add(body);
@@ -88,12 +103,16 @@ public class RssHandler {
                 }
             }
         });
-        item.getChild("http://purl.org/rss/1.0/modules/content/", "encoded").setEndTextElementListener(new EndTextElementListener() {
+        //Retrieves the article body
+        item.getChild("http://purl.org/rss/1.0/modules/content/", "encoded").
+                setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
                 current_Article.set_Article_Body(clean_Article_Body(body));
             }
         });
-        item.getChild("http://search.yahoo.com/mrss/", "content").setStartElementListener(new StartElementListener() {
+        //Retrieves the image url for the article
+        item.getChild("http://search.yahoo.com/mrss/", "content").
+                setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
                 if (check_Image(attributes.getValue("", "url"))) {
                     current_Article.set_image_URL(format_Image(attributes.getValue("", "url")));
@@ -102,7 +121,9 @@ public class RssHandler {
                 }
             }
         });
-        item.getChild("http://search.yahoo.com/mrss/", "thumbnail").setStartElementListener(new StartElementListener() {
+        //Retrieves the thumbnail url for the article
+        item.getChild("http://search.yahoo.com/mrss/", "thumbnail").
+                setStartElementListener(new StartElementListener() {
             public void start(Attributes attributes) {
                 String thumb_String = attributes.getValue("", "url");
                 if (thumb_String.contains((".png"))) {
@@ -139,12 +160,20 @@ public class RssHandler {
         return true;
     }
 
+    /*If a thumbnail file has dimensions on it, strip those dimensions.  We need to make it
+      186x186 and we do so by adding those dims to the string.
+      Double dimension specification = bad.
+     */
     private String remove_Old_Dims(String url, String fileType) {
+        //Currently, we're splitting the url on every "-".  If the segment contains the file type
+        //(.png or .jpg), and that file type hax an x in the 3rd, 4th, or 5th character, then
+        //we can assume the chunk takes the form dim1xdim2.jpg.  We strip dim1xdim2.
+        //TODO: Do this with regex rather than this.  It's more reliable.
+
         String[] parts = url.split("-");
         boolean hadDims = false;
         if (parts[parts.length-1].contains(fileType)) {
             String current = parts[parts.length-1];
-            //TODO: Do this with regex rather than this.  It's more reliable.
             if (current.charAt(2) == 'x' || current.charAt(3) == 'x' || current.charAt(4) == 'x' ||
                     current.charAt(5) == 'x') {
                 parts[parts.length-1] = "." + fileType;
@@ -162,11 +191,10 @@ public class RssHandler {
 
     /* Applies justification to all text in the article's body*/
     private String clean_Article_Body(String body) {
-
             return "<body style=\"text-align:justify;\"> " + body + " </body>";
     }
 
-    /*Surrounds image urls in appropriate html */
+    /*Surrounds image urls in appropriate html so they can be accessed from webviews. */
     private String format_Image(String image_URL) {
         if (image_URL == null) {
             return null;
@@ -176,12 +204,14 @@ public class RssHandler {
                 "</body>";
     }
 
+    //mark all current articles in my_Articles as top news.
     public void mark_Top() {
         for (int i = 0; i < my_Articles.size(); i++) {
             my_Articles.get(i).set_Article_Is_Top(true);
         }
     }
 
+    //Once an item is completed in the RSS feed, this adds the article to the arraylist.
     public void onItem() {
         if (current_Article.get_Article_ID() != badID) {
             current_Article.set_Categories(categories);

@@ -8,7 +8,7 @@ package mayhem.whitworthian_v2.app;
  *  id:                 The article ID
  *  desc:               the Article blurb/description
  *  viewed:             a boolean determining whether or not the user has viewed the article
- *  icon_URL:           The article icon's URL, if available.
+ *  icon_URL:           The article thumbnail URL, if available.
  */
 public class ArticleSelection {
     private int icon;
@@ -26,16 +26,6 @@ public class ArticleSelection {
         desc = null;
         viewed = false;
         icon_URL = null;
-    }
-
-    /* Constructor for ArticleSelection when information is available */
-    public ArticleSelection(int icon, String title, String desc, int id, boolean viewed){
-        super();
-        this.icon = icon;
-        this.title = title;
-        this.desc = desc;
-        this.id = id;
-        this.viewed = viewed;
     }
 
     /* Accessors */

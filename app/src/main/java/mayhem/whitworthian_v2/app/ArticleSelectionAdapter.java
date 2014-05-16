@@ -14,8 +14,9 @@ import android.widget.TextView;
  * the article_list_item_row layout.
  *
  * contains these elements:
- *  context - the current app context
- *  layoutResourceID - the ID of article_list_item_row
+ *  context:                the current app context
+ *  layoutResourceID:       the ID of article_list_item_row
+ *  data:                   the array of articles to display
  *
  */
 
@@ -54,6 +55,7 @@ public class ArticleSelectionAdapter extends ArrayAdapter<ArticleSelection> {
             holder.img_Icon.setImageResource(data[position].get_Icon());
             holder.txt_Desc.setText(trim_Desc(data[position].get_Desc()));
 
+            //Determines if it should display default picture or online thumbnail
             if(data[position].get_icon_URL() == null) {
                 holder.img_URL.setVisibility(View.GONE);
             } else {
