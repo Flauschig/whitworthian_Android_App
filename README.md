@@ -55,7 +55,7 @@ _______________________________________________________
 _____________________________________________________________________________________
 <ol>
 <li> git init just inside of whitworthian_v2 folder(where you see app, build.gradle, etc.) </li>
-<li> git remote add origin https://github.com/Flauschig/whitworthian_basefiles.git </li>
+<li> git remote add origin https://github.com/ptucker/whitworthian_Android_App.git </li>
 <li> git fetch --all </li>
 <li> git reset --hard origin/master </li>
 </ol>
@@ -86,6 +86,9 @@ _______________________________________________
 <li>git push origin master</li>
 </ol>
 
+
+
 ______________________________________
 <p> To get files back down from GitHub, either follow the steps above in creation, or: </p>
+<p> git fetch --all </p>
 <p> git pull origin master </p>
